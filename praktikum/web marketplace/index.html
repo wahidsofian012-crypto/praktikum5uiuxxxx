@@ -1,0 +1,867 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#f7f8fc">
+  <title>Ruang Niaga — Marketplace & Operasional</title>
+  <style>
+    /* Fondasi visual: palet warna, tipografi, dan ukuran dasar seluruh aplikasi. */
+    :root {
+      --ink: #172235;
+      --muted: #8993a5;
+      --line: #edf0f5;
+      --canvas: #f7f8fc;
+      --surface: #fff;
+      --brand: #6758e8;
+      --brand-light: #f0eeff;
+      --mint: #e7f8f0;
+      --green: #179665;
+      --amber: #f4a844;
+      --rose: #e86b79;
+      --blue: #5185e7;
+      --shadow: 0 12px 36px rgba(35, 47, 75, .07);
+      --radius: 16px;
+    }
+    * { box-sizing: border-box; }
+    body { margin: 0; background: var(--canvas); color: var(--ink); font-family: Inter, ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif; font-size: 14px; }
+    button, input, select, textarea { font: inherit; }
+    button { cursor: pointer; }
+    /* Rangka aplikasi: sidebar tetap dan area kerja yang dapat digulir. */
+    .app { min-height: 100vh; }
+    .sidebar { background: #fff; border-right: 1px solid var(--line); bottom: 0; display: flex; flex-direction: column; left: 0; padding: 27px 18px 18px; position: fixed; top: 0; width: 248px; z-index: 10; }
+    .brand { align-items: center; display: flex; gap: 11px; padding: 0 10px 29px; }
+    .brand-mark { align-items: center; background: var(--brand); border-radius: 12px; color: white; display: flex; font-size: 18px; font-weight: 800; height: 38px; justify-content: center; width: 38px; }
+    .brand-name { font-size: 16px; font-weight: 750; letter-spacing: -.5px; }
+    .brand-name span { color: var(--brand); }
+    .store-label { color: #a0a8b7; font-size: 10px; font-weight: 750; letter-spacing: 1.2px; margin: 0 11px 11px; text-transform: uppercase; }
+    .nav-list { display: grid; gap: 5px; }
+    .nav-item { align-items: center; background: transparent; border: 0; border-radius: 10px; color: #788397; display: flex; gap: 12px; padding: 11px 12px; text-align: left; transition: .18s; width: 100%; }
+    .nav-item:hover { background: #f7f7fc; color: var(--ink); }
+    .nav-item.active { background: var(--brand-light); color: var(--brand); font-weight: 700; }
+    .nav-icon { align-items: center; display: flex; font-size: 17px; justify-content: center; width: 19px; }
+    .nav-count { background: #fff; border-radius: 20px; color: var(--brand); font-size: 10px; font-weight: 750; margin-left: auto; padding: 3px 7px; }
+    .sidebar-bottom { border-top: 1px solid var(--line); margin-top: auto; padding-top: 16px; }
+    .help-card { background: #f8f7ff; border: 1px solid #efedff; border-radius: 13px; margin: 0 2px 16px; padding: 13px; }
+    .help-card strong { display: block; font-size: 12px; margin-bottom: 5px; }
+    .help-card p { color: var(--muted); font-size: 11px; line-height: 1.6; margin: 0 0 10px; }
+    .help-card button { background: transparent; border: 0; color: var(--brand); font-size: 11px; font-weight: 700; padding: 0; }
+    .profile { align-items: center; display: flex; gap: 10px; padding: 3px 7px; }
+    .avatar { align-items: center; background: #ece9ff; border-radius: 50%; color: #6555d9; display: inline-flex; flex: 0 0 auto; font-size: 12px; font-weight: 750; height: 36px; justify-content: center; width: 36px; }
+    .profile-copy { min-width: 0; }
+    .profile-copy strong { display: block; font-size: 12px; }
+    .profile-copy span { color: var(--muted); display: block; font-size: 10px; margin-top: 3px; }
+    .main { margin-left: 248px; min-height: 100vh; padding: 0 36px 46px; }
+    /* Header global: pencarian cepat, status toko, dan profil admin. */
+    .topbar { align-items: center; border-bottom: 1px solid var(--line); display: flex; height: 76px; justify-content: space-between; margin: 0 -36px 30px; padding: 0 36px; }
+    .breadcrumb { color: #9ba4b3; font-size: 12px; }
+    .breadcrumb strong { color: #556176; font-weight: 600; }
+    .top-actions { align-items: center; display: flex; gap: 18px; }
+    .search-box { align-items: center; background: #fff; border: 1px solid var(--line); border-radius: 9px; color: #a1a9b6; display: flex; gap: 9px; padding: 9px 12px; width: 220px; }
+    .search-box input { border: 0; color: var(--ink); min-width: 0; outline: 0; width: 100%; }
+    .search-box input::placeholder { color: #a1a9b6; }
+    .icon-button { align-items: center; background: #fff; border: 1px solid var(--line); border-radius: 10px; color: #677287; display: flex; height: 38px; justify-content: center; position: relative; width: 38px; }
+    .dot { background: #f0737c; border: 2px solid white; border-radius: 50%; height: 9px; position: absolute; right: 7px; top: 6px; width: 9px; }
+    .mobile-menu { display: none; }
+    /* Judul tampilan dan tombol aksi yang berubah sesuai menu aktif. */
+    .page-heading { align-items: flex-end; display: flex; justify-content: space-between; margin-bottom: 23px; }
+    .eyebrow { color: var(--brand); font-size: 10px; font-weight: 800; letter-spacing: 1.3px; margin-bottom: 7px; text-transform: uppercase; }
+    h1 { font-size: 25px; letter-spacing: -.8px; margin: 0; }
+    .subtitle { color: var(--muted); font-size: 12px; margin: 7px 0 0; }
+    .heading-actions { align-items: center; display: flex; gap: 9px; }
+    .button { align-items: center; border: 1px solid transparent; border-radius: 9px; display: inline-flex; font-size: 12px; font-weight: 700; gap: 8px; justify-content: center; padding: 10px 14px; transition: .15s; white-space: nowrap; }
+    .button-primary { background: var(--brand); color: #fff; }
+    .button-primary:hover { background: #5546d2; transform: translateY(-1px); }
+    .button-secondary { background: #fff; border-color: var(--line); color: #536076; }
+    .button-secondary:hover { border-color: #d9d5ff; color: var(--brand); }
+    .button-danger { background: #fff1f1; color: #d9505c; }
+    .button-sm { font-size: 11px; padding: 7px 10px; }
+    /* Grid KPI memberi ringkasan omset, pesanan, pelanggan, dan produk. */
+    .stats-grid { display: grid; gap: 15px; grid-template-columns: repeat(4, minmax(0, 1fr)); margin-bottom: 19px; }
+    .stat-card, .panel { background: var(--surface); border: 1px solid #f0f1f5; border-radius: var(--radius); }
+    .stat-card { min-height: 139px; padding: 17px 18px; }
+    .stat-top { align-items: center; color: #8490a2; display: flex; font-size: 11px; justify-content: space-between; }
+    .stat-icon { align-items: center; border-radius: 10px; display: flex; font-size: 16px; height: 34px; justify-content: center; width: 34px; }
+    .stat-value { font-size: 22px; font-weight: 760; letter-spacing: -.6px; margin: 12px 0 7px; }
+    .stat-foot { color: #929bad; font-size: 10px; }
+    .up { color: var(--green); font-weight: 700; }
+    .down { color: var(--rose); font-weight: 700; }
+    /* Panel analitik: grafik penjualan dan distribusi status pesanan. */
+    .dashboard-grid { display: grid; gap: 17px; grid-template-columns: minmax(0, 1.7fr) minmax(260px, .9fr); margin-bottom: 18px; }
+    .panel { padding: 19px; }
+    .panel-heading { align-items: flex-start; display: flex; justify-content: space-between; margin-bottom: 15px; }
+    .panel-heading h2 { font-size: 14px; letter-spacing: -.2px; margin: 0; }
+    .panel-heading p { color: var(--muted); font-size: 10px; margin: 5px 0 0; }
+    .select-compact { background: #fff; border: 1px solid var(--line); border-radius: 7px; color: #68758a; font-size: 10px; outline: 0; padding: 7px 9px; }
+    .chart-legend { color: #8d96a6; display: flex; font-size: 10px; gap: 14px; margin: 4px 0 5px; }
+    .legend-dot { background: var(--brand); border-radius: 50%; display: inline-block; height: 7px; margin-right: 5px; width: 7px; }
+    .chart-wrap { height: 190px; width: 100%; }
+    .chart-wrap svg { height: 100%; overflow: visible; width: 100%; }
+    .chart-labels { color: #a2aaba; display: flex; font-size: 9px; justify-content: space-between; margin-top: 1px; }
+    .order-summary { display: grid; gap: 13px; margin-top: 13px; }
+    .summary-row { align-items: center; color: #707d91; display: grid; font-size: 11px; gap: 8px; grid-template-columns: 10px 1fr auto; }
+    .summary-dot { border-radius: 50%; height: 8px; width: 8px; }
+    .summary-row strong { color: #39465b; font-size: 11px; }
+    .summary-track { background: #f1f2f6; border-radius: 8px; grid-column: 2 / 4; height: 5px; margin-top: -4px; overflow: hidden; }
+    .summary-track span { border-radius: inherit; display: block; height: 100%; }
+    /* Tabel operasional: pesanan terkini serta stok yang memerlukan perhatian. */
+    .lower-grid { display: grid; gap: 17px; grid-template-columns: minmax(0, 1.55fr) minmax(255px, .85fr); }
+    .table-panel { overflow: hidden; padding: 0; }
+    .table-panel .panel-heading { margin: 0; padding: 18px 19px 13px; }
+    .table-scroll { overflow-x: auto; }
+    table { border-collapse: collapse; text-align: left; width: 100%; }
+    th { background: #fafbfc; color: #9aa3b1; font-size: 9px; font-weight: 750; letter-spacing: .45px; padding: 10px 15px; text-transform: uppercase; white-space: nowrap; }
+    td { border-top: 1px solid #f1f2f6; color: #647084; font-size: 11px; padding: 12px 15px; white-space: nowrap; }
+    td strong { color: #354258; font-size: 11px; }
+    .status { border-radius: 30px; display: inline-flex; font-size: 9px; font-weight: 700; padding: 5px 8px; }
+    .status-pending { background: #fff4e3; color: #bd7c1a; }
+    .status-processing { background: #edf2ff; color: #5576d0; }
+    .status-shipped { background: #f0eaff; color: #795bd1; }
+    .status-completed { background: #e7f8f0; color: #16885b; }
+    .status-cancelled { background: #fff0f0; color: #d35c66; }
+    .view-all { background: none; border: 0; color: var(--brand); font-size: 10px; font-weight: 700; padding: 3px; }
+    .stock-list { display: grid; gap: 14px; padding: 4px 18px 17px; }
+    .stock-item { align-items: center; display: flex; gap: 10px; }
+    .product-thumb { align-items: center; background: #f5f3ff; border-radius: 9px; display: flex; flex: 0 0 auto; font-size: 17px; height: 38px; justify-content: center; width: 38px; }
+    .stock-name { flex: 1; min-width: 0; }
+    .stock-name strong { color: #47546a; display: block; font-size: 10px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    .stock-name span { color: #a0a8b6; display: block; font-size: 9px; margin-top: 4px; }
+    .stock-number { color: #d18a2f; font-size: 10px; font-weight: 750; }
+    /* Permukaan konten untuk halaman tabel, chat, dan laporan. */
+    .content-panel { background: #fff; border: 1px solid #f0f1f5; border-radius: var(--radius); overflow: hidden; }
+    .toolbar { align-items: center; display: flex; flex-wrap: wrap; gap: 9px; justify-content: space-between; padding: 15px 17px; }
+    .toolbar-left, .toolbar-right { align-items: center; display: flex; flex-wrap: wrap; gap: 8px; }
+    .inline-search { background: #fff; border: 1px solid var(--line); border-radius: 8px; color: #8993a4; display: flex; gap: 7px; padding: 8px 10px; width: 220px; }
+    .inline-search input { border: 0; min-width: 0; outline: 0; width: 100%; }
+    .inline-search input::placeholder { color: #a3abba; }
+    .filter-select { background: #fff; border: 1px solid var(--line); border-radius: 8px; color: #68758a; font-size: 11px; outline: 0; padding: 8px 10px; }
+    .empty-state { color: #9aa3b2; padding: 38px 18px; text-align: center; }
+    .empty-state strong { color: #536077; display: block; font-size: 13px; margin-bottom: 5px; }
+    /* Ruang percakapan: daftar pembeli di kiri dan isi chat di kanan. */
+    .chat-layout { background: white; border: 1px solid #f0f1f5; border-radius: var(--radius); display: grid; grid-template-columns: 285px minmax(0, 1fr); height: 565px; overflow: hidden; }
+    .conversation-list { border-right: 1px solid var(--line); overflow: auto; }
+    .conversation-head { border-bottom: 1px solid var(--line); padding: 16px; }
+    .conversation-head h2 { font-size: 13px; margin: 0 0 12px; }
+    .conversation-head .inline-search { width: 100%; }
+    .conversation { align-items: flex-start; background: white; border: 0; border-bottom: 1px solid #f4f4f7; display: flex; gap: 10px; padding: 14px 13px; text-align: left; width: 100%; }
+    .conversation.active, .conversation:hover { background: #f8f7ff; }
+    .conversation .avatar { height: 35px; width: 35px; }
+    .conversation-copy { flex: 1; min-width: 0; }
+    .conversation-line { align-items: center; display: flex; justify-content: space-between; }
+    .conversation-line strong { color: #38455b; font-size: 11px; }
+    .conversation-line span { color: #a0a8b5; font-size: 9px; }
+    .conversation-preview { color: #929bab; display: block; font-size: 10px; margin-top: 5px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    .chat-main { display: flex; flex-direction: column; min-width: 0; }
+    .chat-header { align-items: center; border-bottom: 1px solid var(--line); display: flex; gap: 10px; padding: 13px 17px; }
+    .chat-header strong { color: #39465b; display: block; font-size: 12px; }
+    .chat-header span { color: #8e99aa; display: block; font-size: 10px; margin-top: 3px; }
+    .online-dot { background: #38bd83; border: 2px solid white; border-radius: 50%; height: 10px; margin: 0 0 0 -19px; width: 10px; }
+    .chat-messages { background: #fcfcfe; display: flex; flex: 1; flex-direction: column; gap: 12px; overflow-y: auto; padding: 18px; }
+    .day-divider { align-self: center; background: #f1f2f6; border-radius: 20px; color: #969eac; font-size: 9px; padding: 5px 9px; }
+    .message { align-self: flex-start; background: #fff; border: 1px solid #f0f0f4; border-radius: 4px 12px 12px 12px; color: #596579; font-size: 11px; line-height: 1.55; max-width: 76%; padding: 10px 12px; }
+    .message.mine { align-self: flex-end; background: var(--brand); border-color: var(--brand); border-radius: 12px 4px 12px 12px; color: #fff; }
+    .message time { display: block; font-size: 8px; margin-top: 5px; opacity: .65; text-align: right; }
+    .chat-composer { align-items: flex-end; border-top: 1px solid var(--line); display: flex; gap: 8px; padding: 12px 14px; }
+    .chat-composer textarea { border: 1px solid var(--line); border-radius: 9px; flex: 1; max-height: 85px; min-height: 38px; outline: 0; padding: 10px; resize: vertical; }
+    .chat-composer textarea:focus, input:focus, select:focus { border-color: #c9c3ff; }
+    /* Laporan: kartu ringkasan dan data penjualan per transaksi. */
+    .report-grid { display: grid; gap: 14px; grid-template-columns: repeat(3, 1fr); margin-bottom: 17px; }
+    .report-card { background: #fff; border: 1px solid #f0f1f5; border-radius: 13px; padding: 17px; }
+    .report-card span { color: #8f99a9; font-size: 10px; }
+    .report-card strong { display: block; font-size: 20px; margin-top: 10px; }
+    .report-card small { color: #a0a8b5; display: block; font-size: 9px; margin-top: 5px; }
+    /* Dialog formulir dipakai bersama untuk produk, pembelian, dan pesanan. */
+    .modal-backdrop { align-items: center; background: rgba(22, 28, 43, .42); display: none; inset: 0; justify-content: center; padding: 18px; position: fixed; z-index: 30; }
+    .modal-backdrop.open { display: flex; }
+    .modal { background: #fff; border-radius: 17px; box-shadow: 0 24px 80px rgba(20, 24, 40, .2); max-height: 90vh; max-width: 510px; overflow-y: auto; padding: 22px; width: 100%; }
+    .modal-head { align-items: flex-start; display: flex; justify-content: space-between; margin-bottom: 18px; }
+    .modal-head h2 { font-size: 17px; margin: 0; }
+    .modal-head p { color: var(--muted); font-size: 11px; margin: 5px 0 0; }
+    .close-modal { background: #f5f6f9; border: 0; border-radius: 8px; color: #7f8999; font-size: 17px; height: 30px; width: 30px; }
+    .form-grid { display: grid; gap: 13px; grid-template-columns: 1fr 1fr; }
+    .field { display: grid; gap: 6px; }
+    .field.full { grid-column: 1 / -1; }
+    .field label { color: #5e6a7f; font-size: 10px; font-weight: 700; }
+    .field input, .field select, .field textarea { background: #fff; border: 1px solid #e8eaf0; border-radius: 8px; color: #39465b; outline: 0; padding: 10px; width: 100%; }
+    .field textarea { min-height: 68px; resize: vertical; }
+    .modal-actions { display: flex; justify-content: flex-end; margin-top: 18px; }
+    /* Toast ringan memberi konfirmasi atau pesan validasi kepada operator. */
+    .toast { background: #243047; border-radius: 9px; bottom: 22px; box-shadow: var(--shadow); color: white; font-size: 12px; opacity: 0; padding: 12px 16px; pointer-events: none; position: fixed; right: 22px; transform: translateY(12px); transition: .22s; z-index: 50; }
+    .toast.show { opacity: 1; transform: translateY(0); }
+    .hidden { display: none !important; }
+    /* Penyesuaian tata letak agar dashboard tetap dapat dioperasikan di ponsel. */
+    @media (max-width: 1100px) {
+      .sidebar { width: 215px; }
+      .main { margin-left: 215px; padding-left: 25px; padding-right: 25px; }
+      .topbar { margin-left: -25px; margin-right: -25px; padding-left: 25px; padding-right: 25px; }
+      .stats-grid { grid-template-columns: repeat(2, 1fr); }
+    }
+    @media (max-width: 760px) {
+      .sidebar { box-shadow: 10px 0 25px rgba(20, 30, 50, .08); transform: translateX(-105%); transition: transform .22s; width: 248px; }
+      .sidebar.open { transform: translateX(0); }
+      .main { margin-left: 0; padding: 0 16px 30px; }
+      .topbar { height: 64px; margin: 0 -16px 23px; padding: 0 16px; }
+      .mobile-menu { display: flex; }
+      .top-actions { gap: 8px; }
+      .search-box { display: none; }
+      .top-profile { display: none; }
+      .dashboard-grid, .lower-grid { grid-template-columns: 1fr; }
+      .page-heading { align-items: flex-start; gap: 13px; }
+      .heading-actions { align-self: flex-end; }
+      .heading-actions .button { font-size: 10px; padding: 9px; }
+      h1 { font-size: 22px; }
+      .chat-layout { grid-template-columns: 82px minmax(0, 1fr); height: 68vh; min-height: 450px; }
+      .conversation-head { padding: 12px 8px; }
+      .conversation-head h2 { font-size: 10px; }
+      .conversation-head .inline-search { padding: 7px; }
+      .conversation-head .inline-search input { display: none; }
+      .conversation { align-items: center; flex-direction: column; gap: 5px; padding: 11px 3px; }
+      .conversation-copy { text-align: center; width: 100%; }
+      .conversation-line { justify-content: center; }
+      .conversation-line span, .conversation-preview { display: none; }
+      .conversation-line strong { font-size: 9px; max-width: 70px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+      .message { max-width: 90%; }
+      .report-grid { grid-template-columns: 1fr; }
+    }
+    @media (max-width: 430px) {
+      .stats-grid { gap: 9px; }
+      .stat-card { min-height: 122px; padding: 13px; }
+      .stat-value { font-size: 18px; }
+      .stat-foot { font-size: 9px; }
+      .heading-actions .button-secondary { display: none; }
+      .form-grid { grid-template-columns: 1fr; }
+      .field.full { grid-column: auto; }
+      .toolbar { align-items: stretch; }
+      .toolbar-left, .toolbar-right { width: 100%; }
+      .inline-search { flex: 1; }
+    }
+    /* Etalase publik: visual belanja pelanggan terpisah dari panel admin. */
+    .customer-mode { background: #fff; }
+    .customer-mode .sidebar { display: none; }
+    .customer-mode .main { margin: 0; padding: 0 5vw 50px; }
+    .customer-mode .topbar { display: none; }
+    .store-header { align-items: center; background: #fff; border-bottom: 1px solid var(--line); display: flex; gap: 26px; justify-content: space-between; padding: 18px 0; position: sticky; top: 0; z-index: 8; }
+    .store-brand { align-items: center; display: flex; flex: 0 0 auto; gap: 9px; }
+    .store-brand .brand-mark { height: 35px; width: 35px; }
+    .store-links { align-items: center; display: flex; gap: 7px; }
+    .store-link { background: transparent; border: 0; border-radius: 8px; color: #647085; font-size: 11px; padding: 9px 11px; }
+    .store-link:hover, .store-link.selected { background: var(--brand-light); color: var(--brand); font-weight: 700; }
+    .store-head-actions { align-items: center; display: flex; gap: 9px; }
+    .store-search { align-items: center; border: 1px solid var(--line); border-radius: 9px; color: #9aa3b1; display: flex; gap: 8px; padding: 9px 11px; width: 220px; }
+    .store-search input { border: 0; min-width: 0; outline: 0; width: 100%; }
+    .store-search input::placeholder { color: #9aa3b1; }
+    .customer-hero { align-items: center; background: linear-gradient(115deg, #f1efff 0%, #f8f7ff 53%, #fdf3e9 100%); border-radius: 20px; display: grid; gap: 25px; grid-template-columns: 1.2fr .8fr; margin: 27px 0 28px; min-height: 255px; overflow: hidden; padding: 32px 5%; }
+    .customer-hero h1 { font-size: clamp(28px, 4vw, 43px); line-height: 1.12; max-width: 480px; }
+    .customer-hero p { color: #707b90; font-size: 13px; line-height: 1.7; margin: 12px 0 18px; max-width: 420px; }
+    .hero-art { align-items: center; display: flex; font-size: clamp(80px, 12vw, 135px); justify-content: center; position: relative; }
+    .hero-art::before { background: rgba(255,255,255,.65); border-radius: 50%; content: ""; height: 200px; position: absolute; width: 200px; }
+    .hero-art span { filter: drop-shadow(0 16px 12px rgba(74, 63, 126, .17)); position: relative; transform: rotate(-9deg); }
+    .customer-benefits { color: #758096; display: flex; flex-wrap: wrap; font-size: 10px; gap: 14px; margin-top: 17px; }
+    .customer-benefits strong { color: #4d5a70; }
+    .store-section-head { align-items: flex-end; display: flex; justify-content: space-between; margin: 26px 0 15px; }
+    .store-section-head h2 { font-size: 19px; letter-spacing: -.5px; margin: 0; }
+    .store-section-head p { color: #8f99a9; font-size: 11px; margin: 5px 0 0; }
+    .category-chips { display: flex; flex-wrap: wrap; gap: 8px; margin: 0 0 17px; }
+    .category-chip { background: #fff; border: 1px solid #e9ebf1; border-radius: 22px; color: #697589; font-size: 10px; padding: 8px 13px; }
+    .category-chip.active, .category-chip:hover { background: var(--brand-light); border-color: #e2deff; color: var(--brand); }
+    .customer-products { display: grid; gap: 15px; grid-template-columns: repeat(4, minmax(0, 1fr)); }
+    .customer-product { border: 1px solid #eff0f4; border-radius: 13px; overflow: hidden; transition: .18s; }
+    .customer-product:hover { border-color: #dcd7ff; box-shadow: 0 9px 26px rgba(43, 42, 76, .08); transform: translateY(-2px); }
+    .customer-product-art { align-items: center; background: linear-gradient(145deg, #f6f5fc, #f0eff9); display: flex; font-size: 57px; height: 155px; justify-content: center; position: relative; }
+    .customer-product-art span { filter: drop-shadow(0 9px 6px rgba(35, 42, 60, .12)); }
+    .product-tag { background: #fff; border-radius: 18px; color: #7768de; font-size: 9px; left: 10px; padding: 5px 8px; position: absolute; top: 10px; }
+    .customer-product-info { padding: 12px; }
+    .customer-product-info .category { color: #98a0ae; font-size: 9px; }
+    .customer-product-info h3 { color: #37445a; font-size: 11px; line-height: 1.45; margin: 6px 0; min-height: 32px; }
+    .customer-product-price { color: #2b3549; font-size: 13px; font-weight: 800; }
+    .customer-product-foot { align-items: center; color: #96a0af; display: flex; font-size: 9px; justify-content: space-between; margin-top: 9px; }
+    .add-cart { background: var(--brand-light); border: 0; border-radius: 7px; color: var(--brand); font-size: 10px; font-weight: 750; padding: 7px 9px; }
+    .add-cart:disabled { background: #f1f2f5; color: #a4aab4; cursor: not-allowed; }
+    .customer-banner { align-items: center; background: #f8f9fc; border: 1px solid #f0f1f5; border-radius: 14px; color: #677388; display: flex; flex-wrap: wrap; font-size: 10px; gap: 14px; justify-content: space-between; margin: 28px 0 5px; padding: 15px 18px; }
+    .store-footer { border-top: 1px solid var(--line); color: #929aaa; display: flex; flex-wrap: wrap; font-size: 10px; justify-content: space-between; margin-top: 34px; padding: 19px 0 0; }
+    .customer-list { background: white; border: 1px solid #eff0f4; border-radius: 13px; overflow: hidden; }
+    .customer-chat { background: white; border: 1px solid #eff0f4; border-radius: 13px; display: flex; flex-direction: column; height: 480px; overflow: hidden; }
+    .customer-chat .chat-messages { min-height: 0; }
+    .cart-line { align-items: center; border-bottom: 1px solid #f0f1f5; display: grid; gap: 12px; grid-template-columns: 48px 1fr auto; padding: 14px 17px; }
+    .cart-line .product-thumb { height: 46px; width: 46px; }
+    .cart-line-name { color: #435067; font-size: 11px; font-weight: 700; }
+    .cart-line-price { color: #8d97a7; font-size: 10px; margin-top: 4px; }
+    .quantity-control { align-items: center; display: flex; gap: 8px; }
+    .quantity-control button { background: #f5f4ff; border: 0; border-radius: 6px; color: var(--brand); height: 25px; width: 25px; }
+    .cart-total { align-items: center; display: flex; justify-content: space-between; padding: 15px 18px; }
+    .cart-empty { color: #909aaa; padding: 46px 20px; text-align: center; }
+    @media (max-width: 950px) { .customer-products { grid-template-columns: repeat(3, minmax(0, 1fr)); } .store-header { gap: 12px; } .store-search { width: 175px; } }
+    @media (max-width: 700px) {
+      .customer-mode .main { padding: 0 16px 35px; }
+      .store-header { flex-wrap: wrap; gap: 10px; padding: 12px 0; }
+      .store-links { gap: 0; order: 3; overflow-x: auto; width: 100%; }
+      .store-link { flex: 0 0 auto; padding: 8px; }
+      .store-head-actions { margin-left: auto; }
+      .store-search { width: min(42vw, 180px); }
+      .store-head-actions > .button-secondary { display: none; }
+      .customer-hero { grid-template-columns: 1fr; min-height: 0; padding: 25px; }
+      .hero-art { display: none; }
+      .customer-products { gap: 10px; grid-template-columns: repeat(2, minmax(0, 1fr)); }
+      .customer-product-art { height: 130px; }
+      .store-section-head { align-items: flex-start; flex-direction: column; gap: 8px; }
+      .customer-chat { height: 65vh; min-height: 420px; }
+    }
+  </style>
+</head>
+<body>
+  <!-- Tata letak utama: navigasi, header, halaman aktif, dialog, dan notifikasi. -->
+  <div class="app">
+    <!-- Sidebar menu untuk berpindah antarbagian operasional toko. -->
+    <aside class="sidebar" id="sidebar">
+      <div class="brand"><div class="brand-mark">r.</div><div class="brand-name">ruang<span>niaga</span></div></div>
+      <div class="store-label">Workspace toko</div>
+      <nav class="nav-list" id="navigation">
+        <button class="nav-item active" data-page="dashboard"><span class="nav-icon">⌂</span>Ringkasan</button>
+        <button class="nav-item" data-page="orders"><span class="nav-icon">▤</span>Pesanan <span class="nav-count" id="pending-count">0</span></button>
+        <button class="nav-item" data-page="purchases"><span class="nav-icon">↙</span>Pembelian stok</button>
+        <button class="nav-item" data-page="sales"><span class="nav-icon">↗</span>Penjualan</button>
+        <button class="nav-item" data-page="products"><span class="nav-icon">▦</span>Produk</button>
+        <button class="nav-item" data-page="chat"><span class="nav-icon">▢</span>Chat admin <span class="nav-count" id="chat-count">2</span></button>
+        <button class="nav-item" data-page="reports"><span class="nav-icon">▥</span>Laporan</button>
+      </nav>
+      <div class="sidebar-bottom">
+        <div class="help-card"><strong>Butuh bantuan?</strong><p>Tips singkat untuk mengelola toko Anda dengan lebih mudah.</p><button data-page="reports">Lihat ringkasan →</button></div>
+        <div class="profile"><div class="avatar">AN</div><div class="profile-copy"><strong>Andi Nugraha</strong><span>Administrator toko</span></div></div>
+      </div>
+    </aside>
+
+    <!-- Area kerja dengan breadcrumb, pencarian global, dan konten dinamis. -->
+    <main class="main">
+      <header class="topbar">
+        <div style="display:flex;align-items:center;gap:12px"><button class="icon-button mobile-menu" id="menu-toggle" aria-label="Buka menu">☰</button><div class="breadcrumb">Ruang Niaga&nbsp; / &nbsp;<strong id="breadcrumb">Ringkasan</strong></div></div>
+        <div class="top-actions">
+          <label class="search-box"><span>⌕</span><input id="global-search" placeholder="Cari produk atau pesanan..." aria-label="Pencarian global"></label>
+          <button class="button button-secondary" id="open-storefront">Lihat tampilan customer ↗</button>
+          <button class="icon-button" id="notification-button" aria-label="Notifikasi">♧<span class="dot"></span></button>
+          <div class="profile top-profile"><div class="avatar">AN</div><div class="profile-copy"><strong>Andi Nugraha</strong><span>Administrator</span></div></div>
+        </div>
+      </header>
+      <div id="page-content"></div>
+    </main>
+
+    <!-- Modal bersama untuk menginput produk, restok, dan pesanan pelanggan. -->
+    <div class="modal-backdrop" id="modal-backdrop">
+      <section class="modal" role="dialog" aria-modal="true" aria-labelledby="modal-title">
+        <div class="modal-head"><div><h2 id="modal-title"></h2><p id="modal-subtitle"></p></div><button class="close-modal" id="close-modal" aria-label="Tutup">×</button></div>
+        <form id="modal-form"><div class="form-grid" id="modal-fields"></div><div class="modal-actions"><button class="button button-primary" type="submit" id="modal-submit">Simpan data</button></div></form>
+      </section>
+    </div>
+    <div class="toast" id="toast" role="status"></div>
+  </div>
+
+  <script>
+    /* Data awal memberi toko contoh isi yang realistis saat pertama kali dibuka. */
+    const seedData = {
+      products: [
+        { id: "PRD-001", name: "Botol Minum Aurora 750ml", category: "Rumah & Gaya Hidup", price: 89000, stock: 32, sku: "AUR-750", emoji: "🧴" },
+        { id: "PRD-002", name: "Tas Kanvas Everyday", category: "Fashion", price: 125000, stock: 7, sku: "TAS-EVD", emoji: "👜" },
+        { id: "PRD-003", name: "Lampu Meja Minimalis", category: "Elektronik", price: 215000, stock: 4, sku: "LMP-MIN", emoji: "💡" },
+        { id: "PRD-004", name: "Jurnal Harian Linen", category: "Alat Tulis", price: 58000, stock: 46, sku: "JRN-LIN", emoji: "📔" },
+        { id: "PRD-005", name: "Tumbler Kopi Termal", category: "Rumah & Gaya Hidup", price: 112000, stock: 2, sku: "TMB-KOP", emoji: "☕" },
+        { id: "PRD-006", name: "Dompet Kulit Aruna", category: "Fashion", price: 179000, stock: 18, sku: "DPT-ARU", emoji: "👛" }
+      ],
+      orders: [
+        { id: "ORD-2841", customer: "Nadia Putri", date: "2026-10-19", product: "Tas Kanvas Everyday", qty: 1, total: 125000, status: "pending", payment: "QRIS", stockDeducted: true },
+        { id: "ORD-2840", customer: "Rizky Pratama", date: "2026-10-19", product: "Botol Minum Aurora 750ml", qty: 2, total: 178000, status: "processing", payment: "Transfer bank", stockDeducted: true },
+        { id: "ORD-2839", customer: "Dewi Lestari", date: "2026-10-18", product: "Jurnal Harian Linen", qty: 1, total: 58000, status: "shipped", payment: "E-wallet", stockDeducted: true },
+        { id: "ORD-2838", customer: "Fajar Ramadhan", date: "2026-10-18", product: "Dompet Kulit Aruna", qty: 1, total: 179000, status: "completed", payment: "QRIS", stockDeducted: true },
+        { id: "ORD-2837", customer: "Maya Sari", date: "2026-10-17", product: "Tumbler Kopi Termal", qty: 2, total: 224000, status: "completed", payment: "Transfer bank", stockDeducted: true }
+      ],
+      purchases: [
+        { id: "PO-0198", supplier: "PT Cahaya Kreatif", date: "2026-10-16", product: "Lampu Meja Minimalis", qty: 10, unitCost: 142000, total: 1420000, status: "Diterima" },
+        { id: "PO-0197", supplier: "Sumber Kanvas Bandung", date: "2026-10-12", product: "Tas Kanvas Everyday", qty: 15, unitCost: 78000, total: 1170000, status: "Diterima" },
+        { id: "PO-0196", supplier: "Kertas Kita", date: "2026-10-09", product: "Jurnal Harian Linen", qty: 30, unitCost: 32000, total: 960000, status: "Diterima" }
+      ],
+      chats: [
+        { id: "nadia", name: "Nadia Putri", initials: "NP", preview: "Pesanan saya bisa dikirim hari ini?", messages: [{ text: "Halo kak, apakah pesanan tas saya bisa dikirim hari ini?", mine: false, time: "10.24" }, { text: "Halo Kak Nadia! Pesanan sedang kami siapkan dan akan diserahkan ke kurir sore ini ya 😊", mine: true, time: "10.28" }, { text: "Terima kasih, ditunggu ya kak.", mine: false, time: "10.31" }] },
+        { id: "rizky", name: "Rizky Pratama", initials: "RP", preview: "Ada warna lain untuk botolnya?", messages: [{ text: "Kak, untuk botol Aurora ada warna hitam?", mine: false, time: "09.42" }, { text: "Saat ini tersedia warna krem dan sage. Warna hitam sedang restok minggu depan ya Kak.", mine: true, time: "09.48" }] },
+        { id: "dewi", name: "Dewi Lestari", initials: "DL", preview: "Jurnalnya sudah sampai, bagus sekali!", messages: [{ text: "Jurnalnya sudah sampai, bagus sekali! Terima kasih.", mine: false, time: "Kemarin" }] }
+      ]
+    };
+    /* Muat data lokal dengan penanganan data tersimpan yang tidak valid secara eksplisit. */
+    function loadData() {
+      const raw = localStorage.getItem("ruangNiagaData");
+      if (!raw) return structuredClone(seedData);
+      try {
+        const saved = JSON.parse(raw);
+        return { products: saved.products || [], orders: saved.orders || [], purchases: saved.purchases || [], chats: saved.chats || [] };
+      } catch (error) {
+        console.error("Data toko tersimpan tidak dapat dibaca:", error);
+        return structuredClone(seedData);
+      }
+    }
+    let data = loadData();
+    let activePage = "dashboard";
+    let activeChat = data.chats[0]?.id || null;
+    let productSearch = "";
+    let orderFilter = "all";
+    let editingProductId = null;
+    let toastTimer;
+    let currentView = new URLSearchParams(location.search).get("view") === "customer" ? "customer" : "admin";
+    let storePage = "shop";
+    let activeCategory = "Semua";
+    let storeSearch = "";
+    let customerCart = loadCart();
+    let customerName = localStorage.getItem("ruangNiagaCustomerName") || "Nadia Putri";
+
+    /* Keranjang customer dipisahkan dari data toko dan dipertahankan di perangkat. */
+    function loadCart() {
+      try {
+        const cart = JSON.parse(localStorage.getItem("ruangNiagaCart") || "{}");
+        return cart && typeof cart === "object" && !Array.isArray(cart) ? cart : {};
+      } catch (error) {
+        console.error("Keranjang tersimpan tidak dapat dibaca:", error);
+        return {};
+      }
+    }
+    function saveCart() {
+      try { localStorage.setItem("ruangNiagaCart", JSON.stringify(customerCart)); }
+      catch (error) { console.error("Gagal menyimpan keranjang:", error); showToast("Keranjang gagal disimpan di browser."); }
+    }
+    /* Mode customer memiliki URL tersendiri agar etalase mudah dibagikan. */
+    function setView(view) {
+      currentView = view;
+      const url = new URL(location.href);
+      if (view === "customer") url.searchParams.set("view", "customer");
+      else url.searchParams.delete("view");
+      history.replaceState(null, "", `${url.pathname}${url.search}${url.hash}`);
+      render();
+    }
+
+    /* Utilitas tampilan: format rupiah, tanggal, status, serta persistensi. */
+    const rupiah = value => new Intl.NumberFormat("id-ID", { style: "currency", currency: "IDR", maximumFractionDigits: 0 }).format(Number(value) || 0);
+    const compactRupiah = value => value >= 1000000 ? "Rp " + (value / 1000000).toFixed(1).replace(".", ",") + " jt" : rupiah(value);
+    const formatDate = value => new Intl.DateTimeFormat("id-ID", { day: "2-digit", month: "short", year: "numeric" }).format(new Date(value + "T00:00:00"));
+    const escapeHTML = value => String(value ?? "").replace(/[&<>"']/g, ch => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" })[ch]);
+    function saveData() {
+      try { localStorage.setItem("ruangNiagaData", JSON.stringify(data)); }
+      catch (error) { console.error("Gagal menyimpan data toko:", error); showToast("Data gagal disimpan. Periksa penyimpanan browser."); }
+    }
+    function showToast(message) {
+      const toast = document.getElementById("toast");
+      toast.textContent = message;
+      toast.classList.add("show");
+      clearTimeout(toastTimer);
+      toastTimer = setTimeout(() => toast.classList.remove("show"), 2800);
+    }
+    const statusLabel = status => ({ pending: "Menunggu", processing: "Diproses", shipped: "Dikirim", completed: "Selesai", cancelled: "Dibatalkan" })[status] || status;
+    const statusClass = status => ({ pending: "pending", processing: "processing", shipped: "shipped", completed: "completed", cancelled: "cancelled" })[status] || "pending";
+
+    /* Komponen judul halaman dan kontrol ringkasan untuk seluruh menu. */
+    function heading(title, subtitle, action = "", eyebrow = "Operasional toko") {
+      return `<div class="page-heading"><div><div class="eyebrow">${eyebrow}</div><h1>${title}</h1><p class="subtitle">${subtitle}</p></div><div class="heading-actions">${action}</div></div>`;
+    }
+    function actionButton(label, action, secondary = false, icon = "+") {
+      return `<button class="button ${secondary ? "button-secondary" : "button-primary"}" data-action="${action}"><span>${icon}</span>${label}</button>`;
+    }
+
+    /* Dashboard utama: KPI, grafik tujuh hari, pesanan terbaru, dan stok rendah. */
+    function renderDashboard() {
+      const revenue = data.orders.filter(o => o.status === "completed").reduce((sum, o) => sum + o.total, 0);
+      const pending = data.orders.filter(o => o.status === "pending").length;
+      const lowStock = data.products.filter(p => p.stock <= 7);
+      const orderRows = data.orders.slice(0, 4).map(o => `<tr><td><strong>${escapeHTML(o.id)}</strong></td><td>${escapeHTML(o.customer)}</td><td>${escapeHTML(o.product)}</td><td>${rupiah(o.total)}</td><td><span class="status status-${statusClass(o.status)}">${statusLabel(o.status)}</span></td></tr>`).join("");
+      const values = [390, 510, 440, 670, 560, 780, 700];
+      const points = values.map((v, i) => `${28 + i * 74},${152 - v * .16}`).join(" ");
+      const area = `28,160 ${points} 472,160`;
+      const summary = ["pending", "processing", "shipped", "completed"].map((status, i) => {
+        const count = data.orders.filter(o => o.status === status).length;
+        const colors = ["#f3ad4e", "#6288e4", "#8c71de", "#42b987"];
+        const pct = data.orders.length ? Math.round(count / data.orders.length * 100) : 0;
+        return `<div class="summary-row"><i class="summary-dot" style="background:${colors[i]}"></i><span>${statusLabel(status)}</span><strong>${count}</strong><div class="summary-track"><span style="background:${colors[i]};width:${pct}%"></span></div></div>`;
+      }).join("");
+      const stockRows = lowStock.length ? lowStock.map(p => `<div class="stock-item"><div class="product-thumb">${p.emoji}</div><div class="stock-name"><strong>${escapeHTML(p.name)}</strong><span>${escapeHTML(p.category)}</span></div><span class="stock-number">${p.stock} unit</span></div>`).join("") : `<div class="empty-state">Semua stok dalam kondisi baik.</div>`;
+      return `${heading("Selamat pagi, Andi 👋", "Berikut ringkasan performa toko Anda hari ini.", actionButton("Tambah produk", "new-product") + actionButton("Ekspor data", "export", true, "↓"))}
+        <section class="stats-grid">
+          <article class="stat-card"><div class="stat-top"><span>Total penjualan</span><span class="stat-icon" style="background:#eeebff;color:#6858e8">↗</span></div><div class="stat-value">${compactRupiah(revenue)}</div><div class="stat-foot"><span class="up">↑ 12,8%</span> dari bulan lalu</div></article>
+          <article class="stat-card"><div class="stat-top"><span>Pesanan baru</span><span class="stat-icon" style="background:#fff3e3;color:#df982e">▤</span></div><div class="stat-value">${pending}</div><div class="stat-foot"><span class="up">${pending} pesanan</span> perlu diproses</div></article>
+          <article class="stat-card"><div class="stat-top"><span>Total pelanggan</span><span class="stat-icon" style="background:#e7f8f0;color:#21a876">♙</span></div><div class="stat-value">${new Set(data.orders.map(o => o.customer)).size + 124}</div><div class="stat-foot"><span class="up">↑ 8,2%</span> pelanggan aktif</div></article>
+          <article class="stat-card"><div class="stat-top"><span>Produk aktif</span><span class="stat-icon" style="background:#eaf2ff;color:#5285e7">▦</span></div><div class="stat-value">${data.products.length}</div><div class="stat-foot"><span class="${lowStock.length ? "down" : "up"}">${lowStock.length} stok menipis</span> perlu dicek</div></article>
+        </section>
+        <section class="dashboard-grid">
+          <article class="panel"><div class="panel-heading"><div><h2>Performa penjualan</h2><p>Ringkasan transaksi 7 hari terakhir</p></div><select class="select-compact" aria-label="Periode grafik"><option>7 hari terakhir</option><option>30 hari terakhir</option></select></div><div class="chart-legend"><span><i class="legend-dot"></i>Penjualan</span></div>
+            <div class="chart-wrap"><svg viewBox="0 0 500 175" preserveAspectRatio="none" aria-label="Grafik penjualan mingguan"><defs><linearGradient id="chart-fill" x1="0" x2="0" y1="0" y2="1"><stop offset="0%" stop-color="#7567ed" stop-opacity=".20"/><stop offset="100%" stop-color="#7567ed" stop-opacity="0"/></linearGradient></defs><line x1="25" y1="28" x2="490" y2="28" stroke="#f0f1f6"/><line x1="25" y1="70" x2="490" y2="70" stroke="#f0f1f6"/><line x1="25" y1="112" x2="490" y2="112" stroke="#f0f1f6"/><polygon points="${area}" fill="url(#chart-fill)"/><polyline points="${points}" fill="none" stroke="#7162e8" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>${values.map((v, i) => `<circle cx="${28 + i * 74}" cy="${152 - v * .16}" r="3" fill="#fff" stroke="#7162e8" stroke-width="2"/>`).join("")}</svg></div><div class="chart-labels"><span>Sen</span><span>Sel</span><span>Rab</span><span>Kam</span><span>Jum</span><span>Sab</span><span>Min</span></div></article>
+          <article class="panel"><div class="panel-heading"><div><h2>Status pesanan</h2><p>Distribusi pesanan toko</p></div><span style="color:#9aa3b1;font-size:10px">${data.orders.length} pesanan</span></div><div class="order-summary">${summary}</div><div style="border-top:1px solid var(--line);color:#97a0af;font-size:10px;line-height:1.6;margin-top:17px;padding-top:13px">Perbarui status pesanan agar pelanggan selalu mendapat informasi terbaru.</div></article>
+        </section>
+        <section class="lower-grid">
+          <article class="panel table-panel"><div class="panel-heading"><div><h2>Pesanan terbaru</h2><p>Transaksi yang baru masuk ke toko</p></div><button class="view-all" data-page="orders">Lihat semua →</button></div><div class="table-scroll"><table><thead><tr><th>ID pesanan</th><th>Pelanggan</th><th>Produk</th><th>Total</th><th>Status</th></tr></thead><tbody>${orderRows || `<tr><td colspan="5" class="empty-state">Belum ada pesanan.</td></tr>`}</tbody></table></div></article>
+          <article class="panel"><div class="panel-heading"><div><h2>Stok menipis</h2><p>Produk dengan stok 7 unit atau kurang</p></div><button class="view-all" data-page="products">Kelola →</button></div><div class="stock-list">${stockRows}</div></article>
+        </section>`;
+    }
+
+    /* Halaman pesanan: cari, saring status, dan alihkan status transaksi. */
+    function renderOrders() {
+      const filtered = data.orders.filter(o => (orderFilter === "all" || o.status === orderFilter) && [o.id, o.customer, o.product].some(x => x.toLowerCase().includes(productSearch.toLowerCase())));
+      const rows = filtered.map(o => `<tr><td><strong>${escapeHTML(o.id)}</strong></td><td>${escapeHTML(o.customer)}</td><td>${formatDate(o.date)}</td><td>${escapeHTML(o.product)} × ${o.qty}</td><td>${rupiah(o.total)}</td><td>${escapeHTML(o.payment)}</td><td><span class="status status-${statusClass(o.status)}">${statusLabel(o.status)}</span></td><td><select class="filter-select order-status" data-id="${o.id}" aria-label="Ubah status ${o.id}"><option value="pending" ${o.status === "pending" ? "selected" : ""}>Menunggu</option><option value="processing" ${o.status === "processing" ? "selected" : ""}>Diproses</option><option value="shipped" ${o.status === "shipped" ? "selected" : ""}>Dikirim</option><option value="completed" ${o.status === "completed" ? "selected" : ""}>Selesai</option><option value="cancelled" ${o.status === "cancelled" ? "selected" : ""}>Dibatalkan</option></select></td></tr>`).join("");
+      const filterOptions = [["all", "Semua status"], ["pending", "Menunggu"], ["processing", "Diproses"], ["shipped", "Dikirim"], ["completed", "Selesai"], ["cancelled", "Dibatalkan"]].map(([v, t]) => `<option value="${v}" ${orderFilter === v ? "selected" : ""}>${t}</option>`).join("");
+      return `${heading("Pesanan pelanggan", "Pantau pembayaran, proses, dan pengiriman pesanan.", actionButton("Tambah pesanan", "new-order"))}<section class="content-panel"><div class="toolbar"><div class="toolbar-left"><label class="inline-search">⌕<input id="table-search" value="${escapeHTML(productSearch)}" placeholder="Cari ID atau pelanggan..."></label><select id="order-filter" class="filter-select">${filterOptions}</select></div><div class="toolbar-right"><span style="color:#929bab;font-size:10px">${filtered.length} pesanan ditemukan</span></div></div><div class="table-scroll"><table><thead><tr><th>ID pesanan</th><th>Pelanggan</th><th>Tanggal</th><th>Produk</th><th>Total</th><th>Pembayaran</th><th>Status</th><th>Perbarui</th></tr></thead><tbody>${rows || `<tr><td colspan="8"><div class="empty-state"><strong>Belum ada pesanan</strong>Coba ubah pencarian atau tambahkan pesanan baru.</div></td></tr>`}</tbody></table></div></section>`;
+    }
+
+    /* Halaman pembelian: catat pembelian pemasok dan tambahkan stok otomatis. */
+    function renderPurchases() {
+      const rows = data.purchases.map(p => `<tr><td><strong>${escapeHTML(p.id)}</strong></td><td>${formatDate(p.date)}</td><td>${escapeHTML(p.supplier)}</td><td>${escapeHTML(p.product)}</td><td>${p.qty} unit</td><td>${rupiah(p.unitCost)}</td><td><strong>${rupiah(p.total)}</strong></td><td><span class="status status-completed">${escapeHTML(p.status)}</span></td></tr>`).join("");
+      const total = data.purchases.reduce((sum, p) => sum + p.total, 0);
+      return `${heading("Pembelian stok", "Catat barang masuk dan pantau biaya dari pemasok.", actionButton("Catat pembelian", "new-purchase"))}<div class="report-grid"><div class="report-card"><span>Total pembelian tercatat</span><strong>${compactRupiah(total)}</strong><small>${data.purchases.length} transaksi pembelian</small></div><div class="report-card"><span>Unit stok masuk</span><strong>${data.purchases.reduce((s, p) => s + Number(p.qty), 0)} unit</strong><small>Akumulasi barang diterima</small></div><div class="report-card"><span>Pemasok aktif</span><strong>${new Set(data.purchases.map(p => p.supplier)).size}</strong><small>Pemasok terdaftar pada transaksi</small></div></div><section class="content-panel"><div class="toolbar"><div class="toolbar-left"><strong style="font-size:12px">Riwayat pembelian</strong></div><div class="toolbar-right"><button class="button button-secondary button-sm" data-action="export-purchases">↓ Ekspor CSV</button></div></div><div class="table-scroll"><table><thead><tr><th>No. pembelian</th><th>Tanggal</th><th>Pemasok</th><th>Produk</th><th>Jumlah</th><th>Harga satuan</th><th>Total biaya</th><th>Status</th></tr></thead><tbody>${rows || `<tr><td colspan="8"><div class="empty-state"><strong>Belum ada pembelian</strong>Catat pembelian stok pertama Anda.</div></td></tr>`}</tbody></table></div></section>`;
+    }
+
+    /* Halaman penjualan: transaksi selesai saja yang dihitung sebagai omzet. */
+    function renderSales() {
+      const sales = data.orders.filter(o => o.status === "completed");
+      const total = sales.reduce((sum, o) => sum + o.total, 0);
+      const average = sales.length ? Math.round(total / sales.length) : 0;
+      const rows = sales.map(o => `<tr><td><strong>${escapeHTML(o.id)}</strong></td><td>${formatDate(o.date)}</td><td>${escapeHTML(o.customer)}</td><td>${escapeHTML(o.product)}</td><td>${o.qty}</td><td>${escapeHTML(o.payment)}</td><td><strong>${rupiah(o.total)}</strong></td></tr>`).join("");
+      return `${heading("Data penjualan", "Omzet dihitung dari pesanan yang sudah berstatus selesai.", actionButton("Ekspor penjualan", "export-sales", true, "↓"))}<div class="report-grid"><div class="report-card"><span>Total omzet terealisasi</span><strong>${compactRupiah(total)}</strong><small>Dari ${sales.length} pesanan selesai</small></div><div class="report-card"><span>Rata-rata nilai pesanan</span><strong>${compactRupiah(average)}</strong><small>Nilai rata-rata per transaksi</small></div><div class="report-card"><span>Produk terjual</span><strong>${sales.reduce((s, o) => s + Number(o.qty), 0)} unit</strong><small>Jumlah unit pada pesanan selesai</small></div></div><section class="content-panel"><div class="toolbar"><div class="toolbar-left"><strong style="font-size:12px">Transaksi terealisasi</strong></div><div class="toolbar-right"><span style="color:#919aaa;font-size:10px">${sales.length} transaksi</span></div></div><div class="table-scroll"><table><thead><tr><th>ID transaksi</th><th>Tanggal</th><th>Pelanggan</th><th>Produk</th><th>Jumlah</th><th>Pembayaran</th><th>Nilai penjualan</th></tr></thead><tbody>${rows || `<tr><td colspan="7"><div class="empty-state"><strong>Belum ada penjualan selesai</strong>Pesanan akan muncul di sini setelah ditandai selesai.</div></td></tr>`}</tbody></table></div></section>`;
+    }
+
+    /* Halaman produk: cari katalog, lihat SKU, stok, harga, dan kelola produk. */
+    function renderProducts() {
+      const products = data.products.filter(p => [p.name, p.category, p.sku].some(v => v.toLowerCase().includes(productSearch.toLowerCase())));
+      const rows = products.map(p => `<tr><td><div style="align-items:center;display:flex;gap:9px"><div class="product-thumb">${p.emoji || "📦"}</div><div><strong>${escapeHTML(p.name)}</strong><div style="color:#a0a8b6;font-size:9px;margin-top:3px">${escapeHTML(p.sku)}</div></div></div></td><td>${escapeHTML(p.category)}</td><td>${rupiah(p.price)}</td><td><span class="${p.stock <= 7 ? "down" : ""}">${p.stock} unit</span></td><td><span class="status ${p.stock <= 7 ? "status-pending" : "status-completed"}">${p.stock <= 7 ? "Stok menipis" : "Aktif"}</span></td><td><button class="button button-secondary button-sm" data-action="edit-product" data-id="${p.id}">Ubah</button> <button class="button button-danger button-sm" data-action="delete-product" data-id="${p.id}" aria-label="Hapus ${escapeHTML(p.name)}">×</button></td></tr>`).join("");
+      return `${heading("Katalog produk", "Kelola harga, kategori, SKU, dan ketersediaan produk.", actionButton("Tambah produk", "new-product"))}<section class="content-panel"><div class="toolbar"><div class="toolbar-left"><label class="inline-search">⌕<input id="table-search" value="${escapeHTML(productSearch)}" placeholder="Cari nama, kategori, SKU..."></label></div><div class="toolbar-right"><span style="color:#929bab;font-size:10px">${products.length} dari ${data.products.length} produk</span></div></div><div class="table-scroll"><table><thead><tr><th>Produk</th><th>Kategori</th><th>Harga jual</th><th>Stok</th><th>Status</th><th>Aksi</th></tr></thead><tbody>${rows || `<tr><td colspan="6"><div class="empty-state"><strong>Produk tidak ditemukan</strong>Coba kata kunci lain atau tambahkan produk.</div></td></tr>`}</tbody></table></div></section>`;
+    }
+
+    /* Halaman chat: percakapan lokal per pelanggan dengan balasan admin tersimpan. */
+    function renderChat() {
+      const chats = data.chats;
+      const list = chats.map(c => `<button class="conversation ${c.id === activeChat ? "active" : ""}" data-chat="${escapeHTML(c.id)}"><div class="avatar">${escapeHTML(c.initials)}</div><div class="conversation-copy"><div class="conversation-line"><strong>${escapeHTML(c.name)}</strong><span>${escapeHTML(c.messages.at(-1)?.time || "")}</span></div><span class="conversation-preview">${escapeHTML(c.messages.at(-1)?.text || c.preview)}</span></div></button>`).join("");
+      const chat = chats.find(c => c.id === activeChat);
+      const messages = chat ? chat.messages.map(m => `<div class="message ${m.mine ? "mine" : ""}">${escapeHTML(m.text)}<time>${escapeHTML(m.time)}</time></div>`).join("") : `<div class="empty-state">Pilih percakapan untuk memulai.</div>`;
+      return `${heading("Chat pelanggan", "Layani pertanyaan pembeli dengan cepat dan personal.", "")}<section class="chat-layout"><aside class="conversation-list"><div class="conversation-head"><h2>Percakapan <span style="color:#a0a8b5;font-weight:500">(${chats.length})</span></h2><label class="inline-search">⌕<input id="chat-search" placeholder="Cari pelanggan..."></label></div><div id="conversation-items">${list || `<div class="empty-state">Belum ada percakapan.</div>`}</div></aside><section class="chat-main">${chat ? `<header class="chat-header"><div class="avatar">${escapeHTML(chat.initials)}</div><i class="online-dot"></i><div><strong>${escapeHTML(chat.name)}</strong><span>Pelanggan · biasanya membalas dalam beberapa menit</span></div></header>` : `<header class="chat-header"><strong>Pilih percakapan</strong></header>`}<div class="chat-messages" id="chat-messages"><div class="day-divider">Hari ini</div>${messages}</div><form class="chat-composer" id="chat-form"><textarea id="chat-input" placeholder="Tulis balasan..." ${chat ? "" : "disabled"} aria-label="Tulis balasan"></textarea><button class="button button-primary" type="submit" ${chat ? "" : "disabled"}>Kirim ↑</button></form></section></section>`;
+    }
+
+    /* Halaman laporan merangkum omzet, pembelian, pesanan, dan ekspor operasional. */
+    function renderReports() {
+      const sales = data.orders.filter(o => o.status === "completed").reduce((s, o) => s + o.total, 0);
+      const costs = data.purchases.reduce((s, p) => s + p.total, 0);
+      return `${heading("Laporan toko", "Ringkasan sederhana untuk membantu keputusan operasional.", actionButton("Unduh laporan CSV", "export", true, "↓"))}<div class="report-grid"><div class="report-card"><span>Penjualan selesai</span><strong>${compactRupiah(sales)}</strong><small>Akumulasi pesanan berstatus selesai</small></div><div class="report-card"><span>Biaya pembelian stok</span><strong>${compactRupiah(costs)}</strong><small>Akumulasi barang dari pemasok</small></div><div class="report-card"><span>Selisih penjualan & pembelian</span><strong>${compactRupiah(sales - costs)}</strong><small>Indikator sederhana, belum termasuk biaya lain</small></div></div><section class="content-panel"><div class="toolbar"><div><strong style="font-size:12px">Ringkasan operasional</strong><div style="color:#9aa3b1;font-size:10px;margin-top:5px">Nilai diperbarui otomatis dari data pesanan dan pembelian Anda.</div></div><button class="button button-secondary button-sm" data-action="reset-data">Pulihkan data contoh</button></div><div style="padding:0 17px 17px"><table><tbody><tr><td>Total pesanan</td><td><strong>${data.orders.length}</strong></td><td>Pesanan aktif maupun selesai</td></tr><tr><td>Pesanan perlu diproses</td><td><strong>${data.orders.filter(o => ["pending", "processing"].includes(o.status)).length}</strong></td><td>Menunggu atau sedang diproses</td></tr><tr><td>Jumlah produk aktif</td><td><strong>${data.products.length}</strong></td><td>${data.products.filter(p => p.stock <= 7).length} produk memiliki stok menipis</td></tr><tr><td>Total transaksi pembelian</td><td><strong>${data.purchases.length}</strong></td><td>Barang masuk tercatat</td></tr></tbody></table></div></section><p style="color:#9ba3b1;font-size:10px;line-height:1.7;margin-top:14px">Catatan: ini adalah ringkasan operasional, bukan laporan akuntansi atau pajak. Data tersimpan di browser perangkat ini.</p>`;
+    }
+
+    /* Header storefront menyediakan navigasi customer dan akses panel admin. */
+    function renderStoreHeader() {
+      const count = Object.values(customerCart).reduce((sum, qty) => sum + Number(qty), 0);
+      const links = [["shop", "Beranda"], ["cart", `Keranjang (${count})`], ["orders", "Pesanan saya"], ["contact", "Hubungi admin"]].map(([page, label]) =>
+        `<button class="store-link ${storePage === page ? "selected" : ""}" data-store-page="${page}">${label}</button>`).join("");
+      return `<header class="store-header"><div class="store-brand"><div class="brand-mark">r.</div><div class="brand-name">ruang<span>niaga</span></div></div><nav class="store-links">${links}</nav><div class="store-head-actions"><label class="store-search">⌕<input id="store-search" value="${escapeHTML(storeSearch)}" placeholder="Cari produk..."></label><button class="button button-secondary" data-store-page="cart">🛒 Keranjang (${count})</button><button class="button button-primary" data-view="admin">Panel admin</button></div></header>`;
+    }
+
+    /* Kartu produk storefront menampilkan harga, stok nyata, kategori, dan aksi. */
+    function renderStoreProducts() {
+      const products = data.products.filter(p => p.stock > 0 &&
+        (activeCategory === "Semua" || p.category === activeCategory) &&
+        [p.name, p.category, p.sku].some(v => v.toLowerCase().includes(storeSearch.toLowerCase())));
+      if (!products.length) return `<div class="empty-state" style="grid-column:1/-1"><strong>Produk belum ditemukan</strong>Coba kata pencarian atau kategori lainnya.</div>`;
+      return products.map(p => `<article class="customer-product"><div class="customer-product-art"><span>${escapeHTML(p.emoji || "📦")}</span><span class="product-tag">${escapeHTML(p.category)}</span></div><div class="customer-product-info"><div class="category">${escapeHTML(p.category)}</div><h3>${escapeHTML(p.name)}</h3><div class="customer-product-price">${rupiah(p.price)}</div><div class="customer-product-foot"><span>★ 4,9 · Stok ${p.stock}</span><button class="add-cart" data-store-action="add-cart" data-id="${escapeHTML(p.id)}">+ Keranjang</button></div></div></article>`).join("");
+    }
+
+    /* Beranda toko menampilkan promo, filter kategori, dan katalog yang dapat dibeli. */
+    function renderStoreHome() {
+      const categories = ["Semua", ...new Set(data.products.map(p => p.category))];
+      return `<section class="customer-hero"><div><div class="eyebrow">Pilihan untuk hari ini</div><h1>Temukan barang yang bikin harimu lebih baik.</h1><p>Produk pilihan dengan kualitas terjaga, dikemas dengan perhatian, dan dikirim ke seluruh Indonesia.</p><button class="button button-primary" data-store-action="shop-now">Jelajahi produk&nbsp; ↓</button><div class="customer-benefits"><span>✓ <strong>Produk pilihan</strong></span><span>✓ <strong>Belanja aman</strong></span><span>✓ <strong>Layanan ramah</strong></span></div></div><div class="hero-art" aria-hidden="true"><span>🛍️</span></div></section><div class="store-section-head"><div><h2>Belanja pilihan</h2><p>Temukan produk favorit dari Ruang Niaga.</p></div><span style="color:#939cac;font-size:10px">${data.products.filter(p => p.stock > 0).length} produk tersedia</span></div><div class="category-chips">${categories.map(c => `<button class="category-chip ${activeCategory === c ? "active" : ""}" data-category="${escapeHTML(c)}">${escapeHTML(c)}</button>`).join("")}</div><section class="customer-products" id="customer-product-grid">${renderStoreProducts()}</section><div class="customer-banner"><span>📦 <strong>Pengiriman ke seluruh Indonesia</strong> · Ongkir dan estimasi dikonfirmasi saat checkout.</span><span>💬 Ada pertanyaan? <button class="view-all" data-store-page="contact">Hubungi admin →</button></span></div><footer class="store-footer"><span>© 2026 Ruang Niaga · Toko pilihan Anda</span><span>Simulasi toko lokal · pembayaran tidak diproses secara online</span></footer>`;
+    }
+
+    /* Keranjang memungkinkan pembeli mengatur jumlah sebelum checkout. */
+    function renderStoreCart() {
+      const items = Object.entries(customerCart).map(([id, qty]) => ({ product: data.products.find(p => p.id === id), qty: Number(qty) })).filter(item => item.product && item.qty > 0);
+      const subtotal = items.reduce((sum, item) => sum + item.product.price * item.qty, 0);
+      const lines = items.map(({ product, qty }) => `<div class="cart-line"><div class="product-thumb">${escapeHTML(product.emoji || "📦")}</div><div><div class="cart-line-name">${escapeHTML(product.name)}</div><div class="cart-line-price">${rupiah(product.price)} · stok tersedia ${product.stock}</div></div><div class="quantity-control"><button data-store-action="cart-qty" data-id="${product.id}" data-delta="-1" aria-label="Kurangi jumlah">−</button><strong>${qty}</strong><button data-store-action="cart-qty" data-id="${product.id}" data-delta="1" aria-label="Tambah jumlah" ${qty >= product.stock ? "disabled" : ""}>+</button></div></div>`).join("");
+      return `<div class="store-section-head"><div><h2>Keranjang belanja</h2><p>Periksa pilihan dan jumlah produk sebelum checkout.</p></div><button class="button button-secondary button-sm" data-store-page="shop">← Lanjut belanja</button></div><section class="customer-list">${items.length ? `${lines}<div class="cart-total"><span style="color:#68758a;font-size:12px">Subtotal (${items.reduce((s, i) => s + i.qty, 0)} barang)</span><strong style="font-size:17px">${rupiah(subtotal)}</strong></div><div style="display:flex;justify-content:flex-end;padding:0 18px 17px"><button class="button button-primary" data-store-action="checkout">Lanjut ke checkout →</button></div>` : `<div class="cart-empty"><div style="font-size:35px;margin-bottom:9px">🛒</div><strong>Keranjang Anda masih kosong</strong><p>Yuk, temukan produk yang Anda suka.</p><button class="button button-primary" data-store-page="shop">Mulai belanja</button></div>`}</section><p style="color:#98a1b0;font-size:10px;line-height:1.6;margin-top:12px">Biaya pengiriman dikonfirmasi oleh admin. Checkout ini demo lokal; tidak ada pembayaran online yang diproses.</p>`;
+    }
+
+    /* Halaman pesanan customer menampilkan status serta alamat pengiriman sendiri. */
+    function renderCustomerOrders() {
+      const orders = data.orders.filter(o => o.customer.toLowerCase() === customerName.toLowerCase());
+      const rows = orders.map(o => `<tr><td><strong>${escapeHTML(o.transactionId || o.id)}</strong><div style="color:#9aa3b1;font-size:9px;margin-top:3px">${formatDate(o.date)}</div></td><td>${escapeHTML(o.product)} × ${o.qty}</td><td>${rupiah(o.total)}</td><td><span class="status status-${statusClass(o.status)}">${statusLabel(o.status)}</span></td><td>${escapeHTML(o.shippingAddress || "Alamat dikonfirmasi melalui admin")}</td></tr>`).join("");
+      return `<div class="store-section-head"><div><h2>Pesanan saya</h2><p>Hai ${escapeHTML(customerName)}, berikut status pesanan atas nama Anda.</p></div><button class="button button-secondary button-sm" data-store-page="shop">Belanja lagi</button></div><section class="customer-list"><div class="table-scroll"><table><thead><tr><th>No. pesanan</th><th>Produk</th><th>Total</th><th>Status</th><th>Pengiriman</th></tr></thead><tbody>${rows || `<tr><td colspan="5"><div class="empty-state"><strong>Belum ada pesanan atas nama ${escapeHTML(customerName)}</strong>Pesanan Anda akan muncul di halaman ini setelah checkout.</div></td></tr>`}</tbody></table></div></section><p style="color:#98a1b0;font-size:10px;line-height:1.6;margin-top:12px">Untuk melihat pesanan pada perangkat ini, gunakan nama yang sama dengan nama saat checkout.</p>`;
+    }
+
+    /* Ruang tanya admin memakai percakapan lokal yang juga tampil di panel admin. */
+    function ensureCustomerChat() {
+      let chat = data.chats.find(c => c.name.toLowerCase() === customerName.toLowerCase());
+      if (!chat) {
+        const initials = customerName.trim().split(/\s+/).slice(0, 2).map(word => word[0]).join("").toUpperCase();
+        chat = { id: `customer-${Date.now()}`, name: customerName, initials: initials || "CU", preview: "Mulai percakapan", messages: [] };
+        data.chats.unshift(chat);
+        saveData();
+      }
+      activeChat = chat.id;
+      return chat;
+    }
+    function renderStoreContact() {
+      const chat = ensureCustomerChat();
+      const messages = chat.messages.map(m => `<div class="message ${m.mine ? "mine" : ""}">${escapeHTML(m.text)}<time>${escapeHTML(m.time)}</time></div>`).join("");
+      return `<div class="store-section-head"><div><h2>Hubungi admin</h2><p>Tanyakan detail produk, pengiriman, atau status pesanan.</p></div></div><section class="customer-chat"><header class="chat-header"><div class="avatar">AN</div><i class="online-dot"></i><div><strong>Admin Ruang Niaga</strong><span>Biasanya membalas dalam beberapa menit</span></div></header><div class="chat-messages" id="store-chat-messages">${messages || `<div class="day-divider">Mulai percakapan</div><div class="message">Halo ${escapeHTML(customerName)}! Ada yang bisa kami bantu? 😊</div>`}</div><form class="chat-composer" id="store-chat-form"><textarea id="store-chat-input" placeholder="Tulis pesan kepada admin..." aria-label="Tulis pesan kepada admin"></textarea><button class="button button-primary" type="submit">Kirim ↑</button></form></section>`;
+    }
+
+    /* Renderer customer mengganti panel admin tanpa menggandakan sumber datanya. */
+    function renderStorefront() {
+      document.querySelector(".app").classList.add("customer-mode");
+      const page = storePage === "cart" ? renderStoreCart() : storePage === "orders" ? renderCustomerOrders() : storePage === "contact" ? renderStoreContact() : renderStoreHome();
+      document.getElementById("page-content").innerHTML = `${renderStoreHeader()}${page}`;
+      const messages = document.getElementById("store-chat-messages");
+      if (messages) messages.scrollTop = messages.scrollHeight;
+    }
+
+    /* Render halaman memilih isi yang sesuai, memperbarui navigasi dan badge. */
+    function render() {
+      if (currentView === "customer") { renderStorefront(); return; }
+      document.querySelector(".app").classList.remove("customer-mode");
+      const config = {
+        dashboard: ["Ringkasan", renderDashboard], orders: ["Pesanan", renderOrders],
+        purchases: ["Pembelian stok", renderPurchases], sales: ["Penjualan", renderSales],
+        products: ["Produk", renderProducts], chat: ["Chat admin", renderChat], reports: ["Laporan", renderReports]
+      };
+      const [title, renderer] = config[activePage];
+      document.getElementById("breadcrumb").textContent = title;
+      document.getElementById("page-content").innerHTML = renderer();
+      document.querySelectorAll(".nav-item").forEach(item => item.classList.toggle("active", item.dataset.page === activePage));
+      document.getElementById("pending-count").textContent = data.orders.filter(o => o.status === "pending").length;
+      document.getElementById("chat-count").textContent = data.chats.length;
+      document.getElementById("sidebar").classList.remove("open");
+      if (activePage === "chat") scrollChatToBottom();
+    }
+    function scrollChatToBottom() { const box = document.getElementById("chat-messages"); if (box) box.scrollTop = box.scrollHeight; }
+
+    /* Membentuk dialog input dengan field yang sesuai dan memuat nilai saat edit. */
+    function openModal(kind, id = null) {
+      editingProductId = id;
+      const fields = document.getElementById("modal-fields");
+      const title = document.getElementById("modal-title");
+      const subtitle = document.getElementById("modal-subtitle");
+      const submit = document.getElementById("modal-submit");
+      let form = "";
+      if (kind === "product") {
+        const p = data.products.find(item => item.id === id) || {};
+        title.textContent = id ? "Ubah produk" : "Tambah produk baru";
+        subtitle.textContent = "Lengkapi informasi produk yang dijual di toko.";
+        submit.textContent = id ? "Simpan perubahan" : "Simpan produk";
+        form = `<div class="field full"><label>Nama produk</label><input name="name" required maxlength="80" value="${escapeHTML(p.name || "")}" placeholder="Contoh: Botol minum Aurora"></div><div class="field"><label>Kategori</label><select name="category" required><option value="">Pilih kategori</option>${["Fashion", "Rumah & Gaya Hidup", "Elektronik", "Alat Tulis", "Kecantikan", "Lainnya"].map(c => `<option ${p.category === c ? "selected" : ""}>${c}</option>`).join("")}</select></div><div class="field"><label>SKU</label><input name="sku" required maxlength="24" value="${escapeHTML(p.sku || "")}" placeholder="SKU-001"></div><div class="field"><label>Harga jual (Rp)</label><input name="price" type="number" required min="1" value="${p.price || ""}" placeholder="100000"></div><div class="field"><label>Stok tersedia</label><input name="stock" type="number" required min="0" value="${p.stock ?? ""}" placeholder="10"></div><div class="field full"><label>Ikon produk (emoji)</label><input name="emoji" maxlength="4" value="${escapeHTML(p.emoji || "📦")}" placeholder="📦"></div>`;
+      } else if (kind === "purchase") {
+        title.textContent = "Catat pembelian stok"; subtitle.textContent = "Stok produk akan bertambah setelah pembelian disimpan."; submit.textContent = "Simpan pembelian";
+        form = `<div class="field full"><label>Pemasok</label><input name="supplier" required maxlength="80" placeholder="Nama pemasok"></div><div class="field full"><label>Produk</label><select name="product" required><option value="">Pilih produk</option>${data.products.map(p => `<option value="${escapeHTML(p.id)}">${escapeHTML(p.name)}</option>`).join("")}</select></div><div class="field"><label>Jumlah unit</label><input name="qty" type="number" required min="1" value="1"></div><div class="field"><label>Harga modal per unit (Rp)</label><input name="unitCost" type="number" required min="1" placeholder="50000"></div><div class="field full"><label>Tanggal pembelian</label><input name="date" type="date" required value="${new Date().toISOString().slice(0, 10)}"></div>`;
+      } else if (kind === "checkout") {
+        title.textContent = "Checkout pesanan"; subtitle.textContent = "Isi data penerima untuk meneruskan pesanan kepada admin."; submit.textContent = "Buat pesanan";
+        form = `<div class="field"><label>Nama penerima</label><input name="customer" required maxlength="80" value="${escapeHTML(customerName)}"></div><div class="field"><label>Nomor WhatsApp</label><input name="phone" required inputmode="tel" pattern="[0-9+() -]{8,20}" placeholder="08xxxxxxxxxx"></div><div class="field full"><label>Alamat lengkap</label><textarea name="address" required maxlength="240" placeholder="Nama jalan, nomor rumah, kecamatan, kota, kode pos"></textarea></div><div class="field full"><label>Metode pembayaran</label><select name="payment"><option>Transfer bank</option><option>QRIS (konfirmasi admin)</option><option>E-wallet (konfirmasi admin)</option><option>Bayar saat dikonfirmasi</option></select></div><div class="field full"><p style="color:#929bab;font-size:10px;line-height:1.6;margin:0">Checkout ini mencatat pesanan untuk demonstrasi. Pembayaran online dan pengiriman belum terhubung ke penyedia layanan.</p></div>`;
+      } else {
+        title.textContent = "Tambah pesanan"; subtitle.textContent = "Catat pesanan pelanggan yang diterima melalui kanal lain."; submit.textContent = "Simpan pesanan";
+        form = `<div class="field"><label>Nama pelanggan</label><input name="customer" required maxlength="80" placeholder="Nama pelanggan"></div><div class="field"><label>Produk</label><select name="product" id="order-product" required><option value="">Pilih produk</option>${data.products.filter(p => p.stock > 0).map(p => `<option value="${escapeHTML(p.id)}">${escapeHTML(p.name)} · ${rupiah(p.price)} (stok ${p.stock})</option>`).join("")}</select></div><div class="field"><label>Jumlah unit</label><input name="qty" type="number" min="1" value="1" required></div><div class="field"><label>Metode pembayaran</label><select name="payment"><option>QRIS</option><option>Transfer bank</option><option>E-wallet</option><option>Tunai</option></select></div><div class="field full"><label>Status pesanan</label><select name="status"><option value="pending">Menunggu pembayaran</option><option value="processing">Diproses</option><option value="completed">Selesai</option></select></div>`;
+      }
+      fields.innerHTML = form;
+      document.getElementById("modal-form").dataset.kind = kind;
+      document.getElementById("modal-backdrop").classList.add("open");
+      const firstInput = fields.querySelector("input, select"); if (firstInput) firstInput.focus();
+    }
+    function closeModal() { document.getElementById("modal-backdrop").classList.remove("open"); }
+    function idFor(prefix, list) { const n = list.reduce((max, item) => { const match = item.id.match(/(\d+)$/); return Math.max(max, match ? Number(match[1]) : 0); }, 0) + 1; return `${prefix}-${String(n).padStart(4, "0")}`; }
+
+    /* Menangani simpanan form dan menjaga konsistensi stok transaksi. */
+    document.getElementById("modal-form").addEventListener("submit", event => {
+      event.preventDefault();
+      const form = event.currentTarget;
+      const values = Object.fromEntries(new FormData(form).entries());
+      const kind = form.dataset.kind;
+      if (kind === "checkout") {
+        const items = Object.entries(customerCart).map(([id, qty]) => ({ product: data.products.find(p => p.id === id), qty: Number(qty) })).filter(item => item.product && item.qty > 0);
+        if (!items.length || items.some(item => item.qty > item.product.stock)) { showToast("Stok berubah. Perbarui jumlah keranjang sebelum checkout."); closeModal(); storePage = "cart"; render(); return; }
+        customerName = values.customer.trim();
+        localStorage.setItem("ruangNiagaCustomerName", customerName);
+        const transactionId = `CHK-${Date.now().toString().slice(-8)}`;
+        for (const item of items) {
+          item.product.stock -= item.qty;
+          data.orders.unshift({
+            id: idFor("ORD", data.orders), transactionId, customer: customerName, phone: values.phone.trim(),
+            shippingAddress: values.address.trim(), date: new Date().toISOString().slice(0, 10),
+            product: item.product.name, qty: item.qty, total: item.product.price * item.qty,
+            status: "processing", payment: values.payment, stockDeducted: true
+          });
+        }
+        customerCart = {};
+        saveCart(); saveData(); closeModal();
+        storePage = "orders"; currentView = "customer"; render();
+        showToast(`Pesanan ${transactionId} berhasil dibuat. Admin akan menghubungi Anda.`);
+        return;
+      } else if (kind === "product") {
+        const skuExists = data.products.some(p => p.sku.toLowerCase() === values.sku.trim().toLowerCase() && p.id !== editingProductId);
+        if (skuExists) { showToast("SKU sudah digunakan produk lain."); return; }
+        const product = { id: editingProductId || idFor("PRD", data.products), name: values.name.trim(), category: values.category, sku: values.sku.trim(), price: Number(values.price), stock: Number(values.stock), emoji: values.emoji || "📦" };
+        if (editingProductId) data.products = data.products.map(p => p.id === editingProductId ? product : p);
+        else data.products.unshift(product);
+        showToast(editingProductId ? "Produk berhasil diperbarui." : "Produk berhasil ditambahkan.");
+        activePage = "products";
+      } else if (kind === "purchase") {
+        const product = data.products.find(p => p.id === values.product);
+        const qty = Number(values.qty); const unitCost = Number(values.unitCost);
+        if (!product || qty < 1 || unitCost < 1) { showToast("Periksa produk, jumlah, dan harga pembelian."); return; }
+        product.stock += qty;
+        data.purchases.unshift({ id: idFor("PO", data.purchases), supplier: values.supplier.trim(), date: values.date, product: product.name, qty, unitCost, total: qty * unitCost, status: "Diterima" });
+        showToast(`Pembelian dicatat. Stok ${product.name} bertambah ${qty} unit.`);
+        activePage = "purchases";
+      } else {
+        const product = data.products.find(p => p.id === values.product);
+        const qty = Number(values.qty);
+        if (!product || qty < 1 || qty > product.stock) { showToast("Jumlah pesanan melebihi stok yang tersedia."); return; }
+        product.stock -= qty;
+        data.orders.unshift({ id: idFor("ORD", data.orders), customer: values.customer.trim(), date: new Date().toISOString().slice(0, 10), product: product.name, qty, total: product.price * qty, status: values.status, payment: values.payment, stockDeducted: true });
+        showToast("Pesanan berhasil dicatat dan stok diperbarui.");
+        activePage = "orders";
+      }
+      saveData(); closeModal(); render();
+    });
+
+    /* Delegasi klik pada navigasi, tombol aksi, status transaksi, dan dialog. */
+    document.getElementById("navigation").addEventListener("click", event => {
+      const button = event.target.closest("[data-page]");
+      if (button) { activePage = button.dataset.page; productSearch = ""; render(); }
+    });
+    document.querySelector(".sidebar-bottom").addEventListener("click", event => { const button = event.target.closest("[data-page]"); if (button) { activePage = button.dataset.page; render(); } });
+    document.getElementById("page-content").addEventListener("click", event => {
+      const viewButton = event.target.closest("[data-view]");
+      if (viewButton) { storePage = "shop"; setView(viewButton.dataset.view); return; }
+      const storePageButton = event.target.closest("[data-store-page]");
+      if (storePageButton) { storePage = storePageButton.dataset.storePage; render(); return; }
+      const categoryButton = event.target.closest("[data-category]");
+      if (categoryButton) { activeCategory = categoryButton.dataset.category; render(); return; }
+      const storeAction = event.target.closest("[data-store-action]");
+      if (storeAction) {
+        const { id, storeAction: action } = storeAction.dataset;
+        if (action === "shop-now") { document.querySelector(".store-section-head")?.scrollIntoView({ behavior: "smooth" }); return; }
+        if (action === "add-cart") {
+          const product = data.products.find(p => p.id === id);
+          if (!product || product.stock < 1) { showToast("Produk sedang habis."); return; }
+          const nextQty = Number(customerCart[id] || 0) + 1;
+          if (nextQty > product.stock) { showToast("Jumlah keranjang sudah mencapai stok tersedia."); return; }
+          customerCart[id] = nextQty; saveCart(); render(); showToast(`${product.name} ditambahkan ke keranjang.`); return;
+        }
+        if (action === "cart-qty") {
+          const product = data.products.find(p => p.id === id);
+          const nextQty = Number(customerCart[id] || 0) + Number(storeAction.dataset.delta);
+          if (nextQty <= 0) delete customerCart[id];
+          else if (product && nextQty <= product.stock) customerCart[id] = nextQty;
+          else { showToast("Jumlah melebihi stok tersedia."); return; }
+          saveCart(); render(); return;
+        }
+        if (action === "checkout") {
+          const items = Object.entries(customerCart).map(([productId, qty]) => ({ product: data.products.find(p => p.id === productId), qty: Number(qty) })).filter(item => item.product && item.qty > 0);
+          if (!items.length) { showToast("Keranjang masih kosong."); return; }
+          if (items.some(item => item.qty > item.product.stock)) { showToast("Periksa kembali stok produk di keranjang."); return; }
+          openModal("checkout"); return;
+        }
+      }
+      const pageButton = event.target.closest("[data-page]");
+      if (pageButton) { activePage = pageButton.dataset.page; productSearch = ""; render(); return; }
+      const button = event.target.closest("[data-action]");
+      if (!button) return;
+      const action = button.dataset.action;
+      if (action === "new-product") openModal("product");
+      else if (action === "edit-product") openModal("product", button.dataset.id);
+      else if (action === "new-purchase") openModal("purchase");
+      else if (action === "new-order") openModal("order");
+      else if (action === "delete-product") {
+        const product = data.products.find(p => p.id === button.dataset.id);
+        if (product && confirm(`Hapus produk "${product.name}" dari katalog?`)) { data.products = data.products.filter(p => p.id !== product.id); saveData(); render(); showToast("Produk berhasil dihapus."); }
+      } else if (action === "export" || action === "export-sales") exportCSV("sales", data.orders.filter(o => action === "export" || o.status === "completed"));
+      else if (action === "export-purchases") exportCSV("pembelian", data.purchases);
+      else if (action === "reset-data") {
+        if (confirm("Pulihkan data contoh? Semua perubahan lokal pada toko ini akan diganti.")) { data = structuredClone(seedData); activeChat = data.chats[0].id; saveData(); render(); showToast("Data contoh berhasil dipulihkan."); }
+      }
+    });
+    document.getElementById("page-content").addEventListener("change", event => {
+      if (event.target.id === "order-filter") { orderFilter = event.target.value; render(); }
+      if (event.target.matches(".order-status")) {
+        const order = data.orders.find(o => o.id === event.target.dataset.id);
+        if (order) {
+          const next = event.target.value;
+          const product = data.products.find(p => p.name === order.product);
+          if (next === "cancelled" && order.status !== "cancelled" && order.stockDeducted && product) {
+            product.stock += order.qty;
+            order.stockDeducted = false;
+          } else if (order.status === "cancelled" && next !== "cancelled" && !order.stockDeducted && product) {
+            if (product.stock < order.qty) { showToast("Stok tidak cukup untuk mengaktifkan kembali pesanan."); render(); return; }
+            product.stock -= order.qty;
+            order.stockDeducted = true;
+          }
+          order.status = next; saveData(); render(); showToast(`Status ${order.id} diperbarui: ${statusLabel(next)}.`);
+        }
+      }
+    });
+    document.getElementById("page-content").addEventListener("input", event => {
+      if (event.target.id === "table-search") { productSearch = event.target.value; const pos = event.target.selectionStart; render(); const input = document.getElementById("table-search"); input.focus(); input.setSelectionRange(pos, pos); }
+      if (event.target.id === "store-search") {
+        storeSearch = event.target.value;
+        const productGrid = document.getElementById("customer-product-grid");
+        if (productGrid) productGrid.innerHTML = renderStoreProducts();
+      }
+      if (event.target.id === "chat-search") {
+        const term = event.target.value.toLowerCase();
+        document.querySelectorAll(".conversation").forEach(row => row.classList.toggle("hidden", !row.textContent.toLowerCase().includes(term)));
+      }
+    });
+    document.getElementById("page-content").addEventListener("click", event => {
+      const conversation = event.target.closest("[data-chat]");
+      if (conversation) { activeChat = conversation.dataset.chat; render(); }
+    });
+
+    /* Mengirim balasan admin dan memperbarui preview chat secara persisten. */
+    document.getElementById("page-content").addEventListener("submit", event => {
+      if (event.target.id !== "chat-form") return;
+      event.preventDefault();
+      const input = document.getElementById("chat-input");
+      const text = input.value.trim();
+      const chat = data.chats.find(c => c.id === activeChat);
+      if (!text || !chat) return;
+      const time = new Intl.DateTimeFormat("id-ID", { hour: "2-digit", minute: "2-digit", hour12: false }).format(new Date());
+      chat.messages.push({ text, mine: true, time });
+      chat.preview = text;
+      saveData(); render();
+    });
+
+    /* Pesan storefront disimpan sebagai pesan customer dan langsung terlihat admin. */
+    document.getElementById("page-content").addEventListener("submit", event => {
+      if (event.target.id !== "store-chat-form") return;
+      event.preventDefault();
+      const input = document.getElementById("store-chat-input");
+      const text = input.value.trim();
+      if (!text) return;
+      const chat = ensureCustomerChat();
+      const time = new Intl.DateTimeFormat("id-ID", { hour: "2-digit", minute: "2-digit", hour12: false }).format(new Date());
+      chat.messages.push({ text, mine: false, time });
+      chat.preview = text;
+      saveData(); render();
+    });
+
+    /* Pencarian global mengarahkan operator ke katalog atau pesanan relevan. */
+    document.getElementById("global-search").addEventListener("keydown", event => {
+      if (event.key !== "Enter") return;
+      const term = event.currentTarget.value.trim();
+      if (!term) return;
+      const hasProduct = data.products.some(p => [p.name, p.sku, p.category].some(v => v.toLowerCase().includes(term.toLowerCase())));
+      activePage = hasProduct ? "products" : "orders"; productSearch = term; render();
+      const input = document.getElementById("table-search"); if (input) input.value = term;
+    });
+
+    /* Ekspor CSV lokal untuk membuka atau mengolah transaksi di spreadsheet. */
+    function exportCSV(kind, rows) {
+      if (!rows.length) { showToast("Belum ada data untuk diekspor."); return; }
+      const columns = kind === "pembelian" ? ["id", "date", "supplier", "product", "qty", "unitCost", "total", "status"] : ["id", "date", "customer", "product", "qty", "total", "payment", "status"];
+      const csv = [columns.join(","), ...rows.map(row => columns.map(key => `"${String(row[key] ?? "").replace(/"/g, '""')}"`).join(","))].join("\r\n");
+      const link = document.createElement("a");
+      link.href = URL.createObjectURL(new Blob(["\uFEFF" + csv], { type: "text/csv;charset=utf-8" }));
+      link.download = `ruang-niaga-${kind}-${new Date().toISOString().slice(0, 10)}.csv`;
+      link.click(); URL.revokeObjectURL(link.href); showToast("File CSV berhasil diunduh.");
+    }
+
+    /* Kontrol global: menu ponsel, dialog, notifikasi, dan render awal. */
+    document.getElementById("menu-toggle").addEventListener("click", () => document.getElementById("sidebar").classList.toggle("open"));
+    document.getElementById("open-storefront").addEventListener("click", () => { storePage = "shop"; setView("customer"); });
+    document.getElementById("close-modal").addEventListener("click", closeModal);
+    document.getElementById("modal-backdrop").addEventListener("click", event => { if (event.target.id === "modal-backdrop") closeModal(); });
+    document.addEventListener("keydown", event => { if (event.key === "Escape") closeModal(); });
+    document.getElementById("notification-button").addEventListener("click", () => showToast(`${data.orders.filter(o => o.status === "pending").length} pesanan menunggu untuk diproses.`));
+    render();
+  </script>
+</body>
+</html>

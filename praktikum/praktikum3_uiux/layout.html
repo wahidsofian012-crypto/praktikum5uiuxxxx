@@ -1,0 +1,140 @@
+
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HTML5 Layout</title>
+
+    <style>
+        * { box-sizing: border-box; }
+
+        body {
+            margin: 0;
+            font-family: Arial, sans-serif;
+            background: #f1f5f9;
+            color: #263238;
+        }
+
+        header {
+            background: #1e3a5f;
+            color: white;
+            text-align: center;
+            padding: 25px;
+        }
+
+        nav {
+            background: #3478b8;
+            padding: 15px;
+            text-align: center;
+        }
+
+        nav a {
+            color: white;
+            text-decoration: none;
+            margin: 0 12px;
+        }
+
+        .container {
+            display: flex;
+            gap: 20px;
+            padding: 20px;
+        }
+
+        article {
+            flex: 3;
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+        }
+
+        section {
+            background: #eaf2f8;
+            padding: 15px;
+            margin-bottom: 15px;
+            border-radius: 6px;
+        }
+
+        aside {
+            flex: 1;
+            min-width: 200px;
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            text-align: center;
+        }
+
+        aside img {
+            width: 100%;
+            border-radius: 8px;
+        }
+
+        footer {
+            background: #1e3a5f;
+            color: white;
+            padding: 15px;
+            text-align: center;
+        }
+
+        @media (max-width: 650px) {
+            .container {
+                flex-direction: column;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <h1>Website Belajar Teknologi</h1>
+        <p>Belajar Pemrograman Web</p>
+    </header>
+
+    <nav>
+        <a href="home.html">Home</a>
+        <a href="layout.html">Artikel</a>
+        <a href="profile.html">Profil</a>
+    </nav>
+
+    <div class="container">
+        <article>
+            <h2>Mengenal Pemrograman Web</h2>
+
+            <section>
+                <h3>Apa Itu HTML?</h3>
+                <p>
+                    HTML digunakan untuk menyusun struktur halaman web,
+                    seperti judul, paragraf, gambar, dan tautan.
+                </p>
+            </section>
+
+            <section>
+                <h3>Apa Itu CSS?</h3>
+                <p>
+                    CSS digunakan untuk mengatur warna, ukuran tulisan,
+                    jarak, dan tata letak halaman web.
+                </p>
+            </section>
+
+            <section>
+                <h3>Manfaat Belajar Web</h3>
+                <p>
+                    Pemrograman web membantu kita membuat website
+                    untuk menyampaikan informasi dan mengembangkan aplikasi.
+                </p>
+            </section>
+        </article>
+
+        <aside>
+            <h3>Foto Multimedia</h3>
+            <img src="foto/foto1.jpeg" alt="Foto untuk konten multimedia">
+            <p>Foto profil pembuat website.</p>
+        </aside>
+    </div>
+
+    <footer>
+        <p>&copy; 2026 Praktikum 3</p>
+    </footer>
+
+</body>
+</html>

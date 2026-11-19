@@ -1,0 +1,140 @@
+* {
+    box-sizing: border-box;
+}
+
+body {
+    margin: 0;
+    padding: 24px;
+    color: #333;
+    font-family: Arial, sans-serif;
+    background: #f5f5f5;
+}
+
+.layout-examples {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 24px;
+    max-width: 1100px;
+    margin: 0 auto;
+}
+
+.example {
+    flex: 1 1 420px;
+}
+
+.example h1,
+.example h2 {
+    font-size: 1.15rem;
+}
+
+.layout-one,
+.layout-two {
+    display: flex;
+    min-height: 260px;
+    border: 3px solid #ef9caf;
+    background: #f2e89a;
+}
+
+.layout-one > nav {
+    flex: 0 0 22%;
+    padding: 16px;
+    background: #f6bfd0;
+}
+
+.layout-one__content {
+    display: flex;
+    flex: 1;
+    flex-direction: column;
+}
+
+.layout-one__content header,
+.layout-one__content footer {
+    flex: 0 0 42px;
+    padding: 12px;
+    background: #f2e89a;
+}
+
+.layout-one__middle {
+    display: flex;
+    flex: 1;
+}
+
+.layout-one__middle article {
+    flex: 1;
+    padding: 14px;
+    background: white;
+}
+
+.layout-one__middle aside {
+    flex: 0 0 28%;
+    padding: 14px;
+    background: #08d5cf;
+}
+
+.layout-two {
+    flex-direction: column;
+    padding: 12px;
+    border-width: 8px;
+    background: #65cfbf;
+}
+
+.layout-two > header,
+.layout-two > footer {
+    flex: 0 0 34px;
+    padding: 8px;
+    text-align: center;
+    background: #f18487;
+}
+
+.layout-two__middle {
+    display: flex;
+    flex: 1;
+    gap: 10px;
+    padding: 10px 0;
+}
+
+.layout-two__middle aside {
+    flex: 0 0 28%;
+    padding: 12px;
+    background: #62b9b1;
+}
+
+.layout-two__middle article {
+    display: flex;
+    flex: 1;
+    flex-direction: column;
+    justify-content: flex-end;
+    padding: 12px;
+    background: #f18487;
+}
+
+.layout-two__middle h3 {
+    margin: 0 0 10px;
+}
+
+.layout-two__tiles {
+    display: flex;
+    gap: 8px;
+}
+
+.layout-two__tiles img {
+    width: calc((100% - 16px) / 3);
+    aspect-ratio: 1;
+    object-fit: cover;
+    border: 2px solid white;
+}
+
+@media (max-width: 520px) {
+    body {
+        padding: 12px;
+    }
+
+    .layout-examples {
+        gap: 12px;
+    }
+
+    .layout-one,
+    .layout-two {
+        min-height: 220px;
+    }
+}

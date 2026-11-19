@@ -1,0 +1,245 @@
+
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Profil Wahid</title>
+
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            font-family: Arial, sans-serif;
+            background: #f1f5f9;
+            color: #263238;
+        }
+
+        header {
+            background: #1e3a5f;
+            color: white;
+            padding: 25px;
+            text-align: center;
+        }
+
+        nav {
+            background: #3478b8;
+            padding: 15px;
+            text-align: center;
+        }
+
+        nav a {
+            color: white;
+            text-decoration: none;
+            margin: 0 12px;
+        }
+
+        main {
+            max-width: 1000px;
+            margin: 25px auto;
+            padding: 0 15px;
+        }
+
+        section {
+            background: white;
+            padding: 22px;
+            margin-bottom: 20px;
+            border-radius: 10px;
+        }
+
+        .profil {
+            display: flex;
+            align-items: center;
+            gap: 25px;
+        }
+
+        .profil img {
+            width: 160px;
+            height: 190px;
+            object-fit: cover;
+            border-radius: 10px;
+        }
+
+        .biodata p {
+            margin: 10px 0;
+        }
+
+        .galeri {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+
+        .galeri img {
+            width: 180px;
+            height: 140px;
+            object-fit: cover;
+            border-radius: 8px;
+        }
+
+        video {
+            width: 100%;
+            max-width: 600px;
+        }
+
+        .download {
+            display: inline-block;
+            background: #1e3a5f;
+            color: white;
+            padding: 12px 18px;
+            text-decoration: none;
+            border-radius: 6px;
+        }
+
+        footer {
+            background: #1e3a5f;
+            color: white;
+            text-align: center;
+            padding: 15px;
+        }
+
+        @media (max-width: 600px) {
+            .profil {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+
+            nav a {
+                display: inline-block;
+                margin: 7px;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <h1>Profil Pribadi</h1>
+        <p>Mengenal diri dan perjalanan belajar saya</p>
+    </header>
+
+    <nav>
+        <a href="home.html">Home</a>
+        <a href="layout.html">Artikel</a>
+        <a href="profile.html">Profil</a>
+    </nav>
+
+    <main>
+
+        <section class="profil">
+            <img src="foto/foto1.jpeg" alt="Foto Wahid">
+
+            <div>
+                <h2>Wahid Sofiana</h2>
+                <p>Mahasiswa yang sedang belajar teknologi dan pemrograman web.</p>
+            </div>
+        </section>
+
+        <section class="biodata">
+            <h2>Biodata Lengkap</h2>
+            <p><strong>Nama:</strong> Wahid Sofiana</p>
+            <p><strong>Tempat, tanggal lahir:</strong> Gunungkidul 2007 08 02</p>
+            <p><strong>Jenis kelamin:</strong> Laki laki</p>
+            <p><strong>Alamat:</strong> Ciseeng</p>
+            <p><strong>Pendidikan:</strong> STT Terpadu Nurul Fikri</p>
+            <p><strong>Hobi:</strong> Belajar teknologi dan coding</p>
+            <p><strong>Cita-cita:</strong> Menjadi programmer profesional</p>
+            <p><strong>Email:</strong> wahidsofian012@gmail.com</p>
+        </section>
+
+        <section>
+            <h2>Tentang Saya</h2>
+
+            <p>
+                Nama saya Wahid Sofiana. Saya sedang mempelajari
+                teknologi informasi dan pengembangan website.
+                Saya belajar menggunakan HTML dan CSS untuk membuat
+                halaman web yang rapi, menarik, dan mudah digunakan.
+            </p>
+
+            <p>
+                Saya ingin terus meningkatkan kemampuan di bidang
+                pemrograman. Saya berusaha memahami setiap materi
+                melalui latihan dan praktik secara langsung agar
+                dapat membuat website dan aplikasi sendiri.
+            </p>
+        </section>
+
+        
+<section>
+    <h2>Video</h2>
+    <p>Berikut adalah video yang berkaitan dengan kegiatan atau pembelajaran saya.</p>
+
+    <video width="350" height="0" controls>
+        <source src="foto/video.mp4" type="video/mp4">
+        Browser Anda tidak mendukung pemutaran video.
+    </video>
+
+    <p>Tambahkan file video bernama <strong>video.mp4</strong> di folder Praktikum3/foto.</p>
+</section>
+
+        <section>
+            <h2>Koleksi Foto</h2>
+
+            <div class="galeri">
+                <img src="foto/foto1.jpeg" alt="Foto koleksi pertama">
+                <img src="foto/foto2.jpeg" alt="Foto koleksi kedua">
+            </div>
+
+            <p>Ganti foto dengan koleksi foto milik Anda sendiri.</p>
+        </section>
+
+        <section>
+            <h2>Download File</h2>
+            <p>Unduh file profil atau CV saya melalui tautan berikut.</p>
+
+            <a class="download" href="file/CV-Wahid.pdf" download>
+                Download CV
+            </a>
+            
+<section>
+    <h2>Curriculum Vitae (CV)</h2>
+
+    <h3>Wahid Sofiana</h3>
+
+    <p><strong>Profil:</strong> Mahasiswa yang tertarik pada teknologi informasi dan pemrograman web.</p>
+
+    <h3>Data Diri</h3>
+    <p>Nama: Wahid Sofiana</p>
+    <p>Email: wahidsofian012@gmail.com</p>
+    <p>Program Studi: Teknik Informatika</p>
+
+    <h3>Pendidikan</h3>
+    <p>STT Terpadu Nurul Fikri</p>
+
+    <h3>Keterampilan</h3>
+    <ul>
+        <li>HTML dasar</li>
+        <li>Visual Studio Code</li>
+        <li>Pemrograman web dasar</li>
+    </ul>
+
+    <h3>Pengalaman Proyek</h3>
+    <ul>
+        <li>Membuat halaman web menggunakan HTML.</li>
+        <li>Membuat layout halaman web menggunakan IFRAME dan HTML5.</li>
+    </ul>
+
+    <p>
+        <a href="cv.html">Lihat CV</a>
+    </p>
+</section>
+
+        </section>
+
+    </main>
+
+    <footer>
+        <p>&copy; 2026 Wahid Sofiana | Praktikum 3</p>
+    </footer>
+
+</body>
+</html>

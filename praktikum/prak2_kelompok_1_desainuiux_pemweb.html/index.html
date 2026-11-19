@@ -1,0 +1,800 @@
+<!doctype html>
+<html lang="id">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#f8f6f0">
+  <title>Form Pemesanan | Praktikum HTML</title>
+  <style>
+    :root {
+      color-scheme: light;
+      --ink: #272923;
+      --muted: #71736b;
+      --paper: #fffefa;
+      --canvas: #f5f3ed;
+      --line: #e8e5dc;
+      --green: #315a42;
+      --green-dark: #234632;
+      --green-soft: #eef3ed;
+      --orange: #d87843;
+      --radius: 18px;
+      font-family: "Segoe UI", Arial, sans-serif;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      min-width: 320px;
+      margin: 0;
+      color: var(--ink);
+      background:
+        radial-gradient(ellipse at 10% 0%, #f0eee3 0, transparent 38rem),
+        var(--canvas);
+      line-height: 1.55;
+    }
+
+    button,
+    input,
+    select,
+    textarea {
+      font: inherit;
+    }
+
+    button {
+      cursor: pointer;
+    }
+
+    .site-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      max-width: 1120px;
+      margin: 0 auto;
+      padding: 24px 28px;
+    }
+
+    .brand {
+      display: inline-flex;
+      align-items: center;
+      gap: 11px;
+      color: var(--ink);
+      font-size: 14px;
+      font-weight: 750;
+      letter-spacing: .02em;
+      text-decoration: none;
+    }
+
+    .brand-mark {
+      display: grid;
+      width: 38px;
+      height: 38px;
+      place-items: center;
+      border-radius: 13px;
+      color: white;
+      background: var(--green);
+      font-size: 20px;
+    }
+
+    .header-note {
+      color: var(--muted);
+      font-size: 13px;
+    }
+
+    main {
+      width: min(100% - 32px, 850px);
+      margin: 30px auto 72px;
+    }
+
+    .intro {
+      margin-bottom: 25px;
+      text-align: center;
+    }
+
+    .eyebrow {
+      margin: 0 0 8px;
+      color: var(--green);
+      font-size: 12px;
+      font-weight: 800;
+      letter-spacing: .14em;
+      text-transform: uppercase;
+    }
+
+    h1 {
+      margin: 0;
+      font-family: Georgia, "Times New Roman", serif;
+      font-size: clamp(32px, 6vw, 46px);
+      font-weight: 500;
+      letter-spacing: -.035em;
+      line-height: 1.12;
+    }
+
+    .intro-copy {
+      max-width: 530px;
+      margin: 12px auto 0;
+      color: var(--muted);
+      font-size: 15px;
+    }
+
+    .order-card {
+      overflow: hidden;
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      background: var(--paper);
+      box-shadow: 0 18px 55px rgb(39 41 35 / 7%);
+    }
+
+    .tabs {
+      display: flex;
+      gap: 6px;
+      padding: 9px;
+      border-bottom: 1px solid var(--line);
+      background: #fbfaf6;
+    }
+
+    .tab {
+      flex: 1;
+      min-height: 45px;
+      padding: 10px 14px;
+      border: 0;
+      border-radius: 11px;
+      color: var(--muted);
+      background: transparent;
+      font-size: 14px;
+      font-weight: 700;
+      transition: color .15s ease, background .15s ease;
+    }
+
+    .tab:hover {
+      color: var(--green-dark);
+      background: #f0f2eb;
+    }
+
+    .tab[aria-selected="true"] {
+      color: white;
+      background: var(--green);
+    }
+
+    .panel {
+      padding: clamp(20px, 5vw, 38px);
+    }
+
+    .panel[hidden],
+    .result[hidden] {
+      display: none;
+    }
+
+    .panel-heading {
+      margin-bottom: 25px;
+    }
+
+    .panel-heading h2 {
+      margin: 0;
+      font-family: Georgia, "Times New Roman", serif;
+      font-size: 26px;
+      font-weight: 500;
+      letter-spacing: -.02em;
+    }
+
+    .panel-heading p {
+      margin: 6px 0 0;
+      color: var(--muted);
+      font-size: 14px;
+    }
+
+    .form-section + .form-section {
+      margin-top: 26px;
+      padding-top: 24px;
+      border-top: 1px solid var(--line);
+    }
+
+    .form-section h3 {
+      margin: 0 0 16px;
+      font-size: 14px;
+      font-weight: 800;
+    }
+
+    .fields {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 16px;
+    }
+
+    .field {
+      display: flex;
+      min-width: 0;
+      flex-direction: column;
+      gap: 6px;
+    }
+
+    .field-wide {
+      grid-column: 1 / -1;
+    }
+
+    .field label,
+    .field-label {
+      font-size: 13px;
+      font-weight: 700;
+    }
+
+    .optional {
+      color: var(--muted);
+      font-size: 12px;
+      font-weight: 400;
+    }
+
+    .control {
+      width: 100%;
+      min-height: 44px;
+      padding: 10px 12px;
+      border: 1px solid #dcd9d0;
+      border-radius: 9px;
+      outline: none;
+      color: var(--ink);
+      background: white;
+      transition: border-color .15s ease, box-shadow .15s ease;
+    }
+
+    .control:focus {
+      border-color: var(--green);
+      box-shadow: 0 0 0 3px rgb(49 90 66 / 13%);
+    }
+
+    textarea.control {
+      min-height: 94px;
+      resize: vertical;
+    }
+
+    .choice-grid {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 10px;
+      margin-top: 8px;
+    }
+
+    .choice {
+      display: flex;
+      align-items: flex-start;
+      gap: 9px;
+      min-height: 45px;
+      padding: 11px 12px;
+      border: 1px solid var(--line);
+      border-radius: 9px;
+      background: #fff;
+      font-size: 13px;
+      cursor: pointer;
+    }
+
+    .choice:hover {
+      border-color: #b4c4b4;
+      background: #fbfcf9;
+    }
+
+    .choice input {
+      width: 16px;
+      height: 16px;
+      flex: 0 0 auto;
+      margin: 2px 0 0;
+      accent-color: var(--green);
+    }
+
+    .choice-copy {
+      display: flex;
+      flex-direction: column;
+      gap: 1px;
+    }
+
+    .choice-copy small {
+      color: var(--muted);
+      font-size: 11px;
+    }
+
+    .help-text {
+      margin: 6px 0 0;
+      color: var(--muted);
+      font-size: 12px;
+    }
+
+    .actions {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 11px;
+      margin-top: 27px;
+    }
+
+    .button {
+      min-height: 46px;
+      padding: 11px 18px;
+      border: 1px solid transparent;
+      border-radius: 10px;
+      font-size: 14px;
+      font-weight: 750;
+      transition: transform .15s ease, background .15s ease;
+    }
+
+    .button:hover {
+      transform: translateY(-1px);
+    }
+
+    .button-primary {
+      color: white;
+      background: var(--green);
+    }
+
+    .button-primary:hover {
+      background: var(--green-dark);
+    }
+
+    .button-secondary {
+      border-color: var(--line);
+      color: var(--ink);
+      background: white;
+    }
+
+    .button-secondary:hover {
+      background: #f8f7f2;
+    }
+
+    .result {
+      margin-top: 24px;
+      padding: 22px;
+      border: 1px solid #d9e5d8;
+      border-radius: 14px;
+      background: var(--green-soft);
+    }
+
+    .result-heading {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 16px;
+      margin-bottom: 16px;
+    }
+
+    .result-heading h3 {
+      margin: 0;
+      color: var(--green-dark);
+      font-size: 17px;
+    }
+
+    .result-heading p {
+      margin: 4px 0 0;
+      color: var(--muted);
+      font-size: 13px;
+    }
+
+    .order-code {
+      flex: 0 0 auto;
+      padding: 5px 9px;
+      border-radius: 7px;
+      color: var(--green-dark);
+      background: white;
+      font-size: 12px;
+      font-weight: 800;
+    }
+
+    .summary {
+      display: grid;
+      grid-template-columns: minmax(100px, .7fr) 1.3fr;
+      gap: 9px 16px;
+      margin: 0;
+      padding-top: 15px;
+      border-top: 1px solid #d9e5d8;
+      font-size: 13px;
+    }
+
+    .summary dt {
+      color: var(--muted);
+    }
+
+    .summary dd {
+      min-width: 0;
+      margin: 0;
+      overflow-wrap: anywhere;
+      font-weight: 650;
+    }
+
+    .summary .total {
+      color: var(--green-dark);
+      font-size: 15px;
+      font-weight: 800;
+    }
+
+    .site-footer {
+      padding: 0 16px 28px;
+      color: var(--muted);
+      font-size: 12px;
+      text-align: center;
+    }
+
+    @media (max-width: 560px) {
+      .site-header {
+        padding: 17px 18px;
+      }
+
+      .header-note {
+        max-width: 118px;
+        text-align: right;
+      }
+
+      main {
+        width: min(100% - 22px, 850px);
+        margin-top: 25px;
+      }
+
+      .fields,
+      .choice-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .choice-grid {
+        gap: 8px;
+      }
+
+      .result {
+        padding: 17px;
+      }
+
+      .summary {
+        grid-template-columns: 1fr;
+        gap: 3px;
+      }
+
+      .summary dd + dt {
+        margin-top: 8px;
+      }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      *,
+      *::before,
+      *::after {
+        scroll-behavior: auto !important;
+        transition-duration: .01ms !important;
+      }
+    }
+  </style>
+</head>
+<body>
+  <header class="site-header">
+    <a class="brand" href="#" aria-label="Praktikum HTML Form, halaman utama">
+      <span class="brand-mark" aria-hidden="true">P</span>
+      <span>Praktikum HTML Form</span>
+    </a>
+    <span class="header-note">Desain UI/UX Pem Web · Praktikum 2</span>
+  </header>
+
+  <main>
+    <section class="intro" aria-labelledby="page-title">
+      <p class="eyebrow">Latihan formulir HTML</p>
+      <h1 id="page-title">Pesan sesuatu yang enak.</h1>
+      <p class="intro-copy">Pilih salah satu formulir di bawah, lengkapi detail pesanan, lalu lihat ringkasan hasilnya.</p>
+    </section>
+
+    <div class="order-card">
+      <div class="tabs" role="tablist" aria-label="Jenis pemesanan">
+        <button class="tab" id="tab-pizza" type="button" role="tab" aria-selected="true" aria-controls="panel-pizza">Pizza</button>
+        <button class="tab" id="tab-barang" type="button" role="tab" aria-selected="false" aria-controls="panel-barang" tabindex="-1">Pemesanan barang</button>
+      </div>
+
+      <section class="panel" id="panel-pizza" role="tabpanel" aria-labelledby="tab-pizza">
+        <div class="panel-heading">
+          <h2>Pizza sesuai seleramu</h2>
+          <p>Racik pizza favoritmu. Pesanan akan diantar ke alamat pilihan.</p>
+        </div>
+
+        <form id="pizza-form">
+          <section class="form-section" aria-labelledby="pizza-contact-heading">
+            <h3 id="pizza-contact-heading">Informasi pemesan</h3>
+            <div class="fields">
+              <div class="field">
+                <label for="pizza-name">Nama lengkap</label>
+                <input class="control" id="pizza-name" name="name" autocomplete="name" required>
+              </div>
+              <div class="field">
+                <label for="pizza-phone">Nomor telepon</label>
+                <input class="control" id="pizza-phone" name="phone" type="tel" autocomplete="tel" required>
+              </div>
+              <div class="field">
+                <label for="pizza-email">Email</label>
+                <input class="control" id="pizza-email" name="email" type="email" autocomplete="email" required>
+              </div>
+              <div class="field">
+                <label for="pizza-address">Alamat pengantaran</label>
+                <input class="control" id="pizza-address" name="address" autocomplete="street-address" required>
+              </div>
+              <div class="field field-wide">
+                <label for="pizza-instructions">Instruksi pengantaran <span class="optional">(opsional)</span></label>
+                <textarea class="control" id="pizza-instructions" name="instructions" maxlength="400" placeholder="Contoh: rumah dengan pagar hijau, bel di pintu depan"></textarea>
+                <p class="help-text">Maksimal 400 karakter.</p>
+              </div>
+            </div>
+          </section>
+
+          <section class="form-section" aria-labelledby="pizza-spec-heading">
+            <h3 id="pizza-spec-heading">Racik pizza</h3>
+            <div class="fields">
+              <fieldset class="field field-wide" style="border:0;padding:0;margin:0">
+                <legend class="field-label">Ukuran pizza</legend>
+                <div class="choice-grid">
+                  <label class="choice">
+                    <input type="radio" name="size" value="Personal" data-price="65000" required>
+                    <span class="choice-copy"><span>Personal</span><small>Rp65.000</small></span>
+                  </label>
+                  <label class="choice">
+                    <input type="radio" name="size" value="Sedang" data-price="95000">
+                    <span class="choice-copy"><span>Sedang</span><small>Rp95.000</small></span>
+                  </label>
+                  <label class="choice">
+                    <input type="radio" name="size" value="Besar" data-price="125000">
+                    <span class="choice-copy"><span>Besar</span><small>Rp125.000</small></span>
+                  </label>
+                </div>
+              </fieldset>
+
+              <div class="field">
+                <label for="pizza-crust">Jenis adonan</label>
+                <select class="control" id="pizza-crust" name="crust" required>
+                  <option value="">Pilih adonan</option>
+                  <option>Original</option>
+                  <option>Tipis dan renyah</option>
+                  <option>Tepi keju</option>
+                  <option>Multigrain</option>
+                </select>
+              </div>
+              <div class="field">
+                <label for="pizza-quantity">Jumlah pizza</label>
+                <input class="control" id="pizza-quantity" name="quantity" type="number" min="1" max="20" value="1" required>
+              </div>
+
+              <fieldset class="field field-wide" style="border:0;padding:0;margin:0">
+                <legend class="field-label">Topping <span class="optional">(pilih sebanyak yang kamu suka, +Rp8.000 per topping)</span></legend>
+                <div class="choice-grid">
+                  <label class="choice"><input type="checkbox" name="topping" value="Pepperoni"><span>Pepperoni</span></label>
+                  <label class="choice"><input type="checkbox" name="topping" value="Jamur"><span>Jamur</span></label>
+                  <label class="choice"><input type="checkbox" name="topping" value="Zaitun"><span>Zaitun</span></label>
+                  <label class="choice"><input type="checkbox" name="topping" value="Bawang"><span>Bawang</span></label>
+                  <label class="choice"><input type="checkbox" name="topping" value="Paprika"><span>Paprika</span></label>
+                  <label class="choice"><input type="checkbox" name="topping" value="Sosis"><span>Sosis</span></label>
+                </div>
+              </fieldset>
+            </div>
+          </section>
+
+          <div class="actions">
+            <button class="button button-primary" type="submit">Pesan pizza</button>
+            <button class="button button-secondary" type="reset">Kosongkan</button>
+          </div>
+        </form>
+
+        <section class="result" id="pizza-result" aria-live="polite" aria-atomic="true" hidden>
+          <div class="result-heading">
+            <div>
+              <h3>Pesanan pizza berhasil dibuat</h3>
+              <p>Ini ringkasan pesananmu.</p>
+            </div>
+            <span class="order-code" id="pizza-code"></span>
+          </div>
+          <dl class="summary" id="pizza-summary"></dl>
+        </section>
+      </section>
+
+      <section class="panel" id="panel-barang" role="tabpanel" aria-labelledby="tab-barang" hidden>
+        <div class="panel-heading">
+          <h2>Form pemesanan barang</h2>
+          <p>Pilih barang dan varian, lalu isi informasi untuk pengiriman.</p>
+        </div>
+
+        <form id="barang-form">
+          <section class="form-section" aria-labelledby="barang-detail-heading">
+            <h3 id="barang-detail-heading">Detail barang</h3>
+            <div class="fields">
+              <div class="field field-wide">
+                <label for="barang-product">Barang</label>
+                <select class="control" id="barang-product" name="product" required>
+                  <option value="">Pilih barang</option>
+                  <option value="Kaos klasik" data-price="125000">Kaos klasik — Rp125.000</option>
+                  <option value="Hoodie harian" data-price="275000">Hoodie harian — Rp275.000</option>
+                  <option value="Totebag kanvas" data-price="85000">Totebag kanvas — Rp85.000</option>
+                  <option value="Topi kasual" data-price="95000">Topi kasual — Rp95.000</option>
+                </select>
+              </div>
+              <div class="field">
+                <label for="barang-size">Ukuran</label>
+                <select class="control" id="barang-size" name="size" required>
+                  <option value="">Pilih ukuran</option>
+                  <option>S</option>
+                  <option>M</option>
+                  <option>L</option>
+                  <option>XL</option>
+                  <option>Tidak ada ukuran</option>
+                </select>
+              </div>
+              <div class="field">
+                <label for="barang-color">Warna</label>
+                <select class="control" id="barang-color" name="color" required>
+                  <option value="">Pilih warna</option>
+                  <option>Hitam</option>
+                  <option>Putih</option>
+                  <option>Hijau</option>
+                  <option>Biru</option>
+                </select>
+              </div>
+              <div class="field">
+                <label for="barang-quantity">Jumlah</label>
+                <input class="control" id="barang-quantity" name="quantity" type="number" min="1" max="20" value="1" required>
+              </div>
+              <div class="field">
+                <label for="barang-payment">Metode pembayaran</label>
+                <select class="control" id="barang-payment" name="payment" required>
+                  <option value="">Pilih metode</option>
+                  <option>Transfer bank</option>
+                  <option>Dompet digital</option>
+                  <option>Bayar di tempat (COD)</option>
+                </select>
+              </div>
+            </div>
+          </section>
+
+          <section class="form-section" aria-labelledby="barang-contact-heading">
+            <h3 id="barang-contact-heading">Informasi pengiriman</h3>
+            <div class="fields">
+              <div class="field">
+                <label for="barang-name">Nama lengkap</label>
+                <input class="control" id="barang-name" name="name" autocomplete="name" required>
+              </div>
+              <div class="field">
+                <label for="barang-phone">Nomor telepon</label>
+                <input class="control" id="barang-phone" name="phone" type="tel" autocomplete="tel" required>
+              </div>
+              <div class="field field-wide">
+                <label for="barang-email">Email</label>
+                <input class="control" id="barang-email" name="email" type="email" autocomplete="email" required>
+              </div>
+              <div class="field field-wide">
+                <label for="barang-address">Alamat pengiriman</label>
+                <textarea class="control" id="barang-address" name="address" autocomplete="street-address" required></textarea>
+              </div>
+              <div class="field field-wide">
+                <label for="barang-note">Catatan pesanan <span class="optional">(opsional)</span></label>
+                <input class="control" id="barang-note" name="note" maxlength="160" placeholder="Catatan tambahan untuk pesananmu">
+              </div>
+            </div>
+            <p class="help-text">Form ini hanya simulasi praktikum; data pesanan tidak dikirim atau disimpan.</p>
+          </section>
+
+          <div class="actions">
+            <button class="button button-primary" type="submit">Buat pesanan barang</button>
+            <button class="button button-secondary" type="reset">Kosongkan</button>
+          </div>
+        </form>
+
+        <section class="result" id="barang-result" aria-live="polite" aria-atomic="true" hidden>
+          <div class="result-heading">
+            <div>
+              <h3>Pesanan barang berhasil dibuat</h3>
+              <p>Periksa kembali ringkasan pesananmu.</p>
+            </div>
+            <span class="order-code" id="barang-code"></span>
+          </div>
+          <dl class="summary" id="barang-summary"></dl>
+        </section>
+      </section>
+    </div>
+  </main>
+
+  <footer class="site-footer">Praktikum 2 · HTML Form</footer>
+
+  <script>
+    const tabs = Array.from(document.querySelectorAll('[role="tab"]'));
+
+    tabs.forEach((tab) => {
+      tab.addEventListener('click', () => {
+        tabs.forEach((item) => {
+          const selected = item === tab;
+          item.setAttribute('aria-selected', String(selected));
+          item.tabIndex = selected ? 0 : -1;
+          document.getElementById(item.getAttribute('aria-controls')).hidden = !selected;
+        });
+      });
+    });
+
+    function formatRupiah(amount) {
+      return new Intl.NumberFormat('id-ID', {
+        style: 'currency',
+        currency: 'IDR',
+        maximumFractionDigits: 0
+      }).format(amount);
+    }
+
+    function addSummaryRow(summary, label, value, className) {
+      const term = document.createElement('dt');
+      const detail = document.createElement('dd');
+      term.textContent = label;
+      detail.textContent = value;
+      if (className) detail.className = className;
+      summary.append(term, detail);
+    }
+
+    function showSummary(form, result, summary, codeElement, prefix, rows) {
+      const data = new FormData(form);
+      summary.replaceChildren();
+      rows(data).forEach(([label, value, className]) => {
+        addSummaryRow(summary, label, value, className);
+      });
+      codeElement.textContent = `${prefix}-${Date.now().toString().slice(-6)}`;
+      result.hidden = false;
+      result.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+    }
+
+    const pizzaForm = document.getElementById('pizza-form');
+    pizzaForm.addEventListener('submit', (event) => {
+      event.preventDefault();
+      const data = new FormData(pizzaForm);
+      const selectedSize = pizzaForm.querySelector('input[name="size"]:checked');
+      const toppings = data.getAll('topping');
+      const quantity = Number(data.get('quantity'));
+      const total = (Number(selectedSize.dataset.price) + toppings.length * 8000) * quantity;
+
+      showSummary(
+        pizzaForm,
+        document.getElementById('pizza-result'),
+        document.getElementById('pizza-summary'),
+        document.getElementById('pizza-code'),
+        'PIZZA',
+        () => [
+          ['Nama', data.get('name')],
+          ['Telepon', data.get('phone')],
+          ['Email', data.get('email')],
+          ['Alamat', data.get('address')],
+          ['Ukuran', data.get('size')],
+          ['Adonan', data.get('crust')],
+          ['Topping', toppings.length ? toppings.join(', ') : 'Tanpa topping tambahan'],
+          ['Jumlah', `${quantity} pizza`],
+          ['Instruksi', data.get('instructions') || 'Tidak ada'],
+          ['Total perkiraan', formatRupiah(total), 'total']
+        ]
+      );
+    });
+
+    const barangForm = document.getElementById('barang-form');
+    barangForm.addEventListener('submit', (event) => {
+      event.preventDefault();
+      const data = new FormData(barangForm);
+      const product = document.getElementById('barang-product');
+      const selectedProduct = product.options[product.selectedIndex];
+      const quantity = Number(data.get('quantity'));
+      const total = Number(selectedProduct.dataset.price) * quantity;
+
+      showSummary(
+        barangForm,
+        document.getElementById('barang-result'),
+        document.getElementById('barang-summary'),
+        document.getElementById('barang-code'),
+        'BRG',
+        () => [
+          ['Nama', data.get('name')],
+          ['Telepon', data.get('phone')],
+          ['Email', data.get('email')],
+          ['Barang', data.get('product')],
+          ['Ukuran', data.get('size')],
+          ['Warna', data.get('color')],
+          ['Jumlah', `${quantity} barang`],
+          ['Pembayaran', data.get('payment')],
+          ['Alamat pengiriman', data.get('address')],
+          ['Catatan', data.get('note') || 'Tidak ada'],
+          ['Total perkiraan', formatRupiah(total), 'total']
+        ]
+      );
+    });
+
+    [pizzaForm, barangForm].forEach((form) => {
+      form.addEventListener('reset', () => {
+        form.parentElement.querySelector('.result').hidden = true;
+      });
+    });
+  </script>
+</body>
+</html>
